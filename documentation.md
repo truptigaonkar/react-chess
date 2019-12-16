@@ -2,12 +2,13 @@
 #Dokumentation för schack-projektet
 
 ##Styleguide
-Vi använder ESLint.
+Vi använder ESLint med AirBNB:s styleguide.
 
 ##Arkitektur
 I projektet använder vi React med funktionskomponenter, samt node.js och Express. CSS: Material Design. Testramverk: React-testing-library.
 
 ##Branchning
+Döp feature branches till feature/FEATURENAMN.
 
 ##Hur teamet jobbar ihop
 Teamet jobbar med scrum. Vi kör daily scrum och sprintar. Daily scrum sker via Slack om vi inte ses fysiskt.
