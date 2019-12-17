@@ -1,16 +1,16 @@
 
-#Dokumentation för schack-projektet
+# Dokumentation för schack-projektet
 
-##Styleguide
+## Styleguide
 Vi använder ESLint med AirBNB:s styleguide.
 
-##Arkitektur
+## Arkitektur
 I projektet använder vi React med funktionskomponenter, samt node.js och Express. CSS: Material Design. Testramverk: React-testing-library.
 
-##Branchning
+## Branchning
 Döp feature branches till feature/FEATURENAMN.
 
-##Hur teamet jobbar ihop
+## Hur teamet jobbar ihop
 Teamet jobbar med scrum. Vi kör daily scrum och sprintar. Daily scrum sker via Slack om vi inte ses fysiskt.
 
 Basel är code reviewer, vi andra turas om när det är Basels kod som ska godkännas; Elin sprint 1, Trupti sprint 2, Ayumi sprint 3.
