@@ -20,6 +20,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test-backend": "jest /backend/tests/backend.test.js",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js --ext .jsx ."
   },
@@ -45,7 +46,8 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^1.7.0",
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
   },
   "proxy": "http://localhost:8000"
 }
