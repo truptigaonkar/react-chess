@@ -4,61 +4,61 @@
 const request = require('supertest');
 let url = 'http://localhost:8000';
 
-test('GET /seeks returns an array', () => {
+test('GET /seeks returns an object', () => {
   return request(url)
   .get('/seeks')
   .expect('Content-Type', /json/)
   .expect(200)
   .then(response => {
-    expect(typeof reponse.body.data).toBe('array');
-  })
+    expect(typeof response.body.data).toBe('object');
+  });
 });
 
-//Should you send any data when you post to /seeks?
 test('POST /seeks returns an object with an id key', () => {
   return request(url)
   .post('/seeks')
+  .send({minutesPerPlayer: 5, addSeconds: 8}) //Send minutesPerPlayer and addSeconds as data - both with numbers as values
   .expect('Content-Type', /json/)
   .expect(200)
   .then(response => {
     expect(typeof response.body.data).toBe('object');
     expect(response.body.data).toHaveProperty('id');
     expect(typeof response.body.data.id).toBe('string');
-  })
+  });
+});
+
+test('POST /seeks responds with 404 if data is incorrect (string)', () => {
+  return request(url)
+  .post('/seeks')
+  .send({minutesPerPlayer: 'five', addSeconds: 8})
+  .expect(404);
+});
+
+test('POST /seeks responds with 404 if data is incorrect (no data)', () => {
+  return request(url)
+  .post('/seeks')
+  .expect(404);
 });
 
 test('Add game proposal', () => {
-  let initialArrayLength = 0;
-  let newArrayLength = 0;
-  let newArray = [];
+  let seeksObject = {};
   let gameId = '';
-  //First request
+  //First request (add game proposal)
   return request(url)
-  .get('/seeks')
+  .post('/seeks')
+  .send({minutesPerPlayer: 5, addSeconds: 8})
   .then(response => {
-    //Check initial array length
-    initialArrayLength = response.body.data.length;
+    //Save game id that the server responds with
+    gameId = response.body.data.id;
   })
   .then(() => {
-    //Second request
+    //Second request (ask for all game proposals)
     request(url)
-    .post(/seeks)
+    .get('/seeks')
     .then(response => {
-      //Save game id that the server responds with
-      gameId = response.body.data.id;
-    })
-  })
-  .then(() => {
-    //Third request
-    request(url)
-    .get(/seeks)
-    .then(response => {
-      //Check new array length and id
-      newArray = response.body.data;
-      newArrayLength = response.body.data.length;
-      expect(newArrayLength).toBe(initialArrayLength + 1);
-      //Check that the game proposal was added to the array
-      expect(newArray).toContain(gameId); // OBS Assumes that a game proposal is saved as a string
-    })
-  })
+      seeksObject = response.body.data;
+      //Check that the game proposal was added
+      expect(seeksObject).toHaveProperty(gameId);
+    });
+  });
 });
