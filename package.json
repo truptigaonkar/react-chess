@@ -22,7 +22,14 @@
     "test": "react-scripts test",
     "test-backend": "jest /backend/tests/backend.test.js",
     "eject": "react-scripts eject",
-    "lint": "eslint --ext .js --ext .jsx ."
+    "lint": "eslint --ext .js --ext .jsx .",
+    "server": "node ./backend/server.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   },
   "eslintConfig": {
     "extends": "react-app"
