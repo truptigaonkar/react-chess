@@ -5,9 +5,9 @@ const router = express.Router();
 
 
 // ● GET / api / game /: id.Returnerar all matchdata från ett pågående spel.
-router.get('/game/:id', matchData);
+router.get('/game/:_id/:newPlayer', matchData);
 
 // ● POST / api / game / move.Gör ett drag i en pågående
-router.post('/game/:id/:move', gameMove);
+router.post('/game/:_id/:move', gameMove);
 
 module.exports = router;
