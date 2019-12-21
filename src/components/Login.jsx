@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import {
+  TextField, Button,
+} from '@material-ui/core';
 
 const Login = () => {
   const [username, setUsername] = useState([]);
@@ -38,11 +41,15 @@ const Login = () => {
   return (
     <div>
       <Helmet><title>Login</title></Helmet>
-      <p style={{ color: 'red' }}>{errorMessage}</p>
-      <form onSubmit={handleAddUser}>
-        <input type="text" name="username" placeholder="Enter Username...." minLength="3" maxLength="40" onChange={handleUsername} value={username} />
-        <button type="submit">Add</button>
-      </form>
+      <div className="login-form">
+        <form onSubmit={handleAddUser}>
+          <p style={{ color: 'red' }}>{errorMessage}</p>
+          <TextField id="standard-basic" label="Username" name="username" placeholder="Leo Forsberg" minLength="3" maxLength="40" onChange={handleUsername} value={username} />
+          <br />
+          <br />
+          <Button type="submit" variant="contained" color="primary">LOGIN</Button>
+        </form>
+      </div>
     </div>
   );
 };
