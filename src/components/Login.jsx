@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 const Login = () => {
   const [username, setUsername] = useState([]);
@@ -36,7 +37,7 @@ const Login = () => {
   }
   return (
     <div>
-      <h3>Login</h3>
+      <Helmet><title>Login</title></Helmet>
       <p style={{ color: 'red' }}>{errorMessage}</p>
       <form onSubmit={handleAddUser}>
         <input type="text" name="username" placeholder="Enter Username...." minLength="3" maxLength="40" onChange={handleUsername} value={username} />
