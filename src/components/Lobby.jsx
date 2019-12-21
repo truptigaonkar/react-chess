@@ -2,9 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Helmet from 'react-helmet';
+import { Redirect } from 'react-router-dom';
 
 const Lobby = () => {
   const [seeks, setSeeks] = useState([]);
+  const [login, setLogin] = useState(false);
 
   useEffect(() => {
     axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
@@ -18,9 +20,20 @@ const Lobby = () => {
     return <p>Loading seeks...</p>;
   }
 
+  const handleLogout = (e) => {
+    e.preventDefault();
+    setLogin(true);
+  };
+
+  if (login) {
+    return (
+      <Redirect to="/" />
+    );
+  }
   return (
     <>
       <Helmet><title>Lobby</title></Helmet>
+      <button type="submit" onClick={handleLogout}>Logout</button>
       <table>
         <thead>
           <tr>
