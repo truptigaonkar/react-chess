@@ -1,9 +1,12 @@
 
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Redirect } from 'react-router-dom';
 
 const Login = () => {
   const [username, setUsername] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [auth, setAuth] = useState(false);
 
   // Handling username input
   const handleUsername = (e) => {
@@ -14,19 +17,29 @@ const Login = () => {
   const handleAddUser = (e) => {
     e.preventDefault();
     axios.post('http://localhost:8000/api/seeks/', { userId: username })
-      .then((response) => {
-        console.log(response.data);
+      .then(() => {
+        setUsername('');
+        setAuth(true);
       })
       .catch((error) => {
-        console.log(error);
+        if (error.response.status === 400) {
+          setErrorMessage('You must fill in username');
+          setTimeout(() => { setErrorMessage(''); }, 2000); // message will disappear after 2000sec.
+        }
       });
   };
 
+  if (auth) {
+    return (
+      <Redirect to="/lobby" />
+    );
+  }
   return (
     <div>
       <h3>Login</h3>
+      <p style={{ color: 'red' }}>{errorMessage}</p>
       <form onSubmit={handleAddUser}>
-        <input type="text" name="username" placeholder="Enter Username...." onChange={handleUsername} value={username} />
+        <input type="text" name="username" placeholder="Enter Username...." minLength="3" maxLength="40" onChange={handleUsername} value={username} />
         <button type="submit">Add</button>
       </form>
     </div>
