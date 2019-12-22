@@ -1,11 +1,18 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import { render, cleanup } from '@testing-library/react';
-import Lobby from './components/Lobby';
+import Login from './components/Login';
 
 afterEach(cleanup);
 
-it("renders table", () => {
+it("renders Enter button", () => {
+  const { getByTestId } = render(<Login />);
+  const button = getByTestId('button');
+  expect(button).toBeInTheDocument();
+  expect(button.textContent).toBe('Enter');
+});
+
+/* it("renders table", () => {
   const { container, getByTestId } = render(<Lobby />);
   expect(getByTestId('table')).toBeInTheDocument();
   expect(container.firstChild).toMatchSnapshot(`
@@ -25,4 +32,4 @@ it("renders buttons", () => {
   const buttons = getByTestId('buttons');
   expect(buttons).toBeInTheDocument();
   expect(buttons.firstChild.textContent).toBe('Create a new match');
-});
+}); */

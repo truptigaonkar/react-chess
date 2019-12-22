@@ -16,3 +16,10 @@
 .App-link {
   color: #61dafb;
 }
+
+.login-form{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
