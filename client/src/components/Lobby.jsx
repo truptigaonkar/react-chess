@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Helmet from 'react-helmet';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 const Lobby = () => {
   const [seeks, setSeeks] = useState([]);
@@ -47,7 +47,7 @@ const Lobby = () => {
               <tr key={seek.id}>
                 <td>{seek.playerOne}</td>
                 <td>
-                  <button type="submit">Play</button>
+                  <Link to="/game/:id" className="btn btn-primary"><button type="submit">Play</button></Link>
                   {' '}
                 </td>
               </tr>

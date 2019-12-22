@@ -69,10 +69,10 @@ const Login = () => {
   // Handlling form submit
   const handleAddUser = (e) => {
     e.preventDefault();
-    localStorage.setItem('userId', username )
+    //localStorage.setItem('userId', username )
     axios.post('http://localhost:8000/api/seeks/', { userId: username })
       .then((res) => {      
-        setUsername('');
+        //setUsername('');
         setAuth(true);
       })
       .catch((error) => {
