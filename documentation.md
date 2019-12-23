@@ -5,7 +5,12 @@
 Vi använder ESLint med AirBNB:s styleguide.
 
 ##Arkitektur
-I projektet använder vi React med funktionskomponenter, samt node.js och Express. CSS: Material Design. Testramverk: React-testing-library.
+I projektet använder vi React med funktionskomponenter, samt node.js och Express.
+ - CSS: Material Design.
+ - Testramverk: React-testing-library.
+ - Testramverk för backend: Jest och SuperTest.
+ - Package manager: npm. 
+ - Anrop: Axios.
 
 ##Branchning
 Döp feature branches till feature/FEATURENAMN.
