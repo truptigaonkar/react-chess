@@ -1,13 +1,13 @@
 const express = require('express');
-const { matchData, gameMove } = require('../controller/game');
+const { matchData, gameMove, playGame } = require('../controller/game');
+const { gameMoveValidationValidation, playGameValidationValidation } = require('../validators/game');
+const { runValidation } = require('../validators');
 
 const router = express.Router();
 
 
-// ● GET / api / game /: id.Returnerar all matchdata från ett pågående spel.
-router.get('/game/:_id/:newPlayer', matchData);
-
-// ● POST / api / game / move.Gör ett drag i en pågående
-router.post('/game/:_id/:move', gameMove);
+router.get('/game/:_id', matchData);
+router.post('/game/move', gameMoveValidationValidation, runValidation, gameMove);
+router.post('/game/play', playGameValidationValidation, runValidation, playGame);
 
 module.exports = router;

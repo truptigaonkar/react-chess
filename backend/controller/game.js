@@ -2,23 +2,43 @@ const Game = require('../models/game');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
 exports.matchData = (req, res) => {
-  const { _id, newPlayer } = req.params;
+  const { _id } = req.params;
   Game.findOne({ _id }).exec((err, game) => {
     if (err) {
       return res.json({ err: errorHandler(err) });
     }
-    const { playerOne, playerTwo } = game;
-
-    console.log(playerOne, playerTwo);
-    if (!playerTwo && newPlayer !== playerOne) {
-      game.playerTwo = newPlayer;
-      game.save();
-      console.log(game);
-      return res.json(game);
+    return res.json(game);
+  });
+};
+exports.playGame = (req, res) => {
+  const { _id, playerTwo } = req.body;
+  Game.findOne({ _id }).exec((err, game) => {
+    if (err) {
+      return res.json({ err: errorHandler(err) });
     }
+    if (!game) {
+      return res.json({ err: 'no game with this id ' });
+    }
+    game.playerTwo = playerTwo;
     return res.json(game);
   });
 };
 exports.gameMove = (req, res) => {
-  res.json({ data: 'gameMove' });
+  const {
+    id, gameHistory, gameFen, gameStyle,
+  } = req.body;
+  Game.findById({ _id: id }).exec((err, game) => {
+    if (err) {
+      return res.json({ err: errorHandler(err) });
+    }
+    if (!game) {
+      return res.json({ err: 'no game with this id ' });
+    }
+    game.history = gameHistory;
+    game.fen = gameFen;
+    game.squareStyles = gameStyle;
+    game.save();
+    const { fen, history, squareStyles } = game;
+    return res.json({ fen, history, squareStyles });
+  });
 };

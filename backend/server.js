@@ -18,6 +18,7 @@ mongoose.connect(process.env.DATABASE, {
   useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false, useUnifiedTopology: true,
 }).then(() => console.log('db connected'));
 // middleware
+
 app.use(bodyParser.json({ limit: '10mb', extended: true }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
@@ -27,9 +28,7 @@ morganBody(app, { logReqUserAgent: false });
 if (process.env.NODE_ENV === 'development') {
   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
 }
-app.get('/test', (req, res) => {
-  res.json({ data: 'done' });
-});
+
 // routes middleware
 app.use('/api', seeks);
 app.use('/api', game);
