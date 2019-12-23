@@ -34,9 +34,10 @@ const Lobby = () => {
     <>
       <Helmet><title>Lobby</title></Helmet>
       <button type="submit" onClick={handleLogout}>Logout</button>
-      <table>
+      <table border='1px solid black'>
         <thead>
           <tr>
+            <th>_id</th>
             <th>Player One</th>
             <th>Action</th>
           </tr>
@@ -45,10 +46,10 @@ const Lobby = () => {
           {seeks.map((seek) => (
             <>
               <tr key={seek.id}>
+                <td>{seek._id}</td>
                 <td>{seek.playerOne}</td>
                 <td>
-                  <Link to="/game/:id" className="btn btn-primary"><button type="submit">Play</button></Link>
-                  {' '}
+                  <Link to={`/game/${seek._id}`} className="btn btn-primary"><button type="submit">Play</button></Link>
                 </td>
               </tr>
             </>
@@ -60,3 +61,4 @@ const Lobby = () => {
 };
 
 export default Lobby;
+
