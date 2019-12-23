@@ -9,9 +9,10 @@ const Lobby = () => {
   const [login, setLogin] = useState(false);
 
   useEffect(() => {
+    console.log(localStorage);
     axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
       .then((response) => {
-        // console.log(response.data);
+        console.log(response.data);
         setSeeks(response.data);
       });
   }, []);
