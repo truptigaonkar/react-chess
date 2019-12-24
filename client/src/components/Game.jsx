@@ -3,6 +3,7 @@ import Helmet from 'react-helmet';
 import Chess from 'chess.js';
 import Chessboard from 'chessboardjsx';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 let chess = new Chess();
 
 let apiUrl = 'http://localhost:3000';
@@ -84,6 +85,7 @@ function Game(props) {
   return (
     <div className="App">
       <Helmet><title>Game</title></Helmet>
+      <Link to='/lobby' className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
       <Chessboard
       position={fen}
       onDrop={onDrop}
@@ -113,7 +115,6 @@ function HistoryTable(props) {
         {tableRows}
       </tbody>
     </table>
->>>>>>> remotes/origin/feature/game
   );
 }
 
