@@ -3,10 +3,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Helmet from 'react-helmet';
 import { Redirect, Link } from 'react-router-dom';
+import Modal from '../components/Modal';
 
 const Lobby = () => {
   const [seeks, setSeeks] = useState([]);
   const [login, setLogin] = useState(false);
+  //Modal
+  const [show, setShow] = useState(false);
+  const openModal = () => setShow(true);
+  const closeModal = () => setShow(false);
 
   useEffect(() => {
     console.log(localStorage);
@@ -35,6 +40,7 @@ const Lobby = () => {
     <>
       <Helmet><title>Lobby</title></Helmet>
       <button type="submit" onClick={handleLogout}>Logout</button>
+      <Modal closeModal={closeModal} show={show} />
       <table border='1px solid black'>
         <thead>
           <tr>
@@ -51,6 +57,7 @@ const Lobby = () => {
                 <td>{seek.playerOne}</td>
                 <td>
                   <Link to={`/game/${seek._id}`} className="btn btn-primary"><button type="submit">Play</button></Link>
+                  {!show && <button onClick={openModal}>Play With Friend</button>}
                 </td>
               </tr>
             </>
