@@ -13,12 +13,25 @@ function Game(props) {
   let [moveHistory, updateMoveHistory] = useState([]);
   let newFen = '';
   let id = props.match.params.id;
+  const [friends, setFriends] = useState([]);
+  const [seeks, setSeeks] = useState([]);
 
   //NOT WORKING!
   useEffect(() => {
-    axios.get('http://localhost:3000/game/333').then((res) => {
-      console.log(res);
+    // axios.get('http://localhost:3000/game/333').then((res) => {
+    //   console.log(res);
+    // });
+    axios.get(`http://localhost:8000/api/game/${id}/${localStorage.getItem('userId')}`)
+    .then((response) => {
+      console.log(response.data);
+      setFriends(response.data);
     });
+
+    axios.get(`http://localhost:8000/api/seeks/${id}/${localStorage.getItem('userId')}`)
+      .then((response) => {
+        console.log("Seek Id: ", response.data.id);
+        setSeeks(response.data);
+      });
   }, []);
 
   // useEffect(() => {
@@ -86,6 +99,8 @@ function Game(props) {
     <div className="App">
       <Helmet><title>Game</title></Helmet>
       <Link to='/lobby' className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
+      <p>Player 1:  {seeks.userId}</p>
+      <p>Player 2:  {friends.playerTwo}</p>
       <Chessboard
       position={fen}
       onDrop={onDrop}
