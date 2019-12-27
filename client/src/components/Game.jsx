@@ -23,13 +23,13 @@ function Game(props) {
     // });
     axios.get(`http://localhost:8000/api/game/${id}/${localStorage.getItem('userId')}`)
     .then((response) => {
-      console.log(response.data);
+      console.log("friends data: ",response.data);
       setFriends(response.data);
     });
 
-    axios.get(`http://localhost:8000/api/seeks/${id}/${localStorage.getItem('userId')}`)
+    axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
       .then((response) => {
-        console.log("Seek Id: ", response.data.id);
+        console.log("Seek data: ", response.data);
         setSeeks(response.data);
       });
   }, []);
@@ -99,8 +99,8 @@ function Game(props) {
     <div className="App">
       <Helmet><title>Game</title></Helmet>
       <Link to='/lobby' className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
-      <p>Player 1:  {seeks.userId}</p>
-      <p>Player 2:  {friends.playerTwo}</p>
+      <p>Player 1: {seeks._id} : {seeks.userId} : {seeks.playerOne}</p>
+      <p>Player 2: {friends._id} : {friends.friendId} : {friends.playerTwo}</p>
       <Chessboard
       position={fen}
       onDrop={onDrop}

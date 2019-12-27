@@ -45,8 +45,6 @@ function Modal(props) {
           <input type="text" name="friendname" placeholder="friendname" onChange={handleFriendname} value={friendname} />
           <button type="submit">Add Friend</button>
         </form>
-
-
       </div>
     </>
   );
