@@ -1,21 +1,16 @@
 const express = require('express');
 const {
-  allMatches, newMatches, acceptMatch, playWithFriend, playWithFriendRequests, allUserGames,
+  allMatches, newMatches, playWithFriend, playWithFriendRequests, allUserGames,
 } = require('../controller/seeks');
+const { newMatchesValidation, playWithFriendValidation } = require('../validators/seeks');
+const { runValidation } = require('../validators');
 
 const router = express.Router();
 
-// ● GET / api / seeks.Visa alla match förslag
 router.get('/seeks/:userId', allMatches);
-// ● POST / api / seeks.Lägg till ett match förslag
-router.post('/seeks', newMatches);
-// ● POST / api / seeks /: id.Acceptera ett match - förslag
-router.post('/seeks/:id', acceptMatch);
-// ● POST / api / seeks / - spela med en kompis
-router.post('/withFriend', playWithFriend);
-// ● POST / api / seeks / - spela med en kompis
+router.post('/seeks', newMatchesValidation, runValidation, newMatches);
+router.post('/withFriend', playWithFriendValidation, runValidation, playWithFriend);
 router.get('/withFriendRequests/:userId', playWithFriendRequests);
-
 router.get('/allUserGames/:userId', allUserGames);
 
 
