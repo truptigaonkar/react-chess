@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Redirect, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { Grid, CssBaseline, Paper, Typography, Avatar, FormControlLabel, Checkbox, Box, TextField, Button } from '@material-ui/core';
+import { Grid, CssBaseline, Paper, Typography, FormControlLabel, Checkbox, Box, TextField, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {ReactComponent as Crown} from '../resources/crown.svg';
 
@@ -104,9 +104,6 @@ const Login = () => {
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <div className={classes.paper}>
             <Crown className={classes.logo} />
-  {/*           <Avatar className={classes.avatar}>
-              <Crown />
-            </Avatar> */}
             <Typography component="h1" variant="h5">
               Chess
             </Typography>
@@ -145,9 +142,6 @@ const Login = () => {
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>
           <Crown className={classes.logo} />
-{/*           <Avatar className={classes.avatar}>
-            <Crown />
-          </Avatar> */}
           <Typography component="h1" variant="h5">
             Chess
           </Typography>
