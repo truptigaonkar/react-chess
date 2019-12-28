@@ -11,13 +11,13 @@ let apiUrl = 'http://localhost:3000';
 function Game(props) {
   let [fen, updateFen] = useState('start');
   let [moveHistory, updateMoveHistory] = useState([]);
-  let newFen = '';
   let id = props.match.params.id;
 
   //NOT WORKING!
   useEffect(() => {
-    axios.get('http://localhost:3000/game/333').then((res) => {
+    axios.get(`${apiUrl}/game/${id}`).then((res) => {
       console.log(res);
+      //If fen has changed, update fen and switch to this player
     });
   }, []);
 
@@ -45,7 +45,6 @@ function Game(props) {
     let targetSq = sourceSquare.targetSquare;
     let piece = sourceSquare.piece;
     let moveObject = {};
-    let newFen = '';
     let san = '';
 
     moveObject = chess.move({from: sourceSq, to: targetSq});
@@ -98,10 +97,17 @@ function Game(props) {
 
 function HistoryTable(props) {
   let moveHistory = props.moveHistory;
+  let whitePlayer = true;
   console.log(moveHistory);
 
   let tableRows = moveHistory.map( move => {
-    return <tr><td>{move}</td></tr>;
+    if(whitePlayer) {
+      return <tr><td>{move}</td></tr>;
+    }
+    else {
+      return <td>{move}</td>;
+    }
+    whitePlayer = !whitePlayer;
   });
 
   return(
