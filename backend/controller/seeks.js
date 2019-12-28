@@ -54,11 +54,7 @@ exports.playWithFriend = (req, res) => {
     return res.json(newGame);
   });
 };
-exports.acceptMatch = (req, res) => {
-  res.json({ data: 'acceptMatch' });
-};
 exports.playWithFriendRequests = (req, res) => {
-  console.log(req.params);
   const { userId } = req.params;
   Game.find({ $or: [{ withFriend: true, friendId: userId }, { withFriend: true, startedBy: userId }] }).exec((err, games) => {
     if (err) {
