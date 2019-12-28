@@ -14,7 +14,7 @@ const Lobby = () => {
   const closeModal = () => setShow(false);
 
   useEffect(() => {
-    console.log(localStorage);
+    //console.log(localStorage);
     axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
       .then((response) => {
         console.log(response.data);
@@ -69,4 +69,3 @@ const Lobby = () => {
 };
 
 export default Lobby;
-

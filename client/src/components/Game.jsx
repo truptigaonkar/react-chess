@@ -6,67 +6,64 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 let chess = new Chess();
 
-let apiUrl = 'http://localhost:3000';
+let apiUrl = 'http://localhost:8000/api';
 
 function Game(props) {
   let [fen, updateFen] = useState('start');
+  let newFen = '';
   let [moveHistory, updateMoveHistory] = useState([]);
   let id = props.match.params.id;
 
-  //NOT WORKING!
   useEffect(() => {
-    axios.get(`${apiUrl}/game/${id}`).then((res) => {
-      console.log(res);
-      //If fen has changed, update fen and switch to this player
-    });
-  }, []);
+    const timer = setInterval(() => {
+      console.log('Checking for new fen.');
+      axios.get(`${apiUrl}/game/${id}`).then((response) => {
+        console.log(response);
+        newFen = response.data.fen;
+        if(newFen === fen) {
+          console.log('fen is unchanged.');
+        }
+        //If fen has changed, update fen
+        if(newFen !== fen) {
+          console.log('Updating fen.');
+          updateFen(newFen);
+        }
+      });
+    }, 1000);
 
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     console.log('timer');
-  //     //GET request
-  //     axios.get(`${apiUrl}/game/333`)
-  //     .then(function (response) {
-  //       console.log(response);
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error);
-  //     });
-  //   }, 1000);
-  //
-  //   return () => {
-  //     console.log('clean');
-  //     return clearTimeout(timer);
-  //   };
-  // },[]);
+    return () => {
+      console.log('clean');
+      return clearTimeout(timer);
+    };
+  });
+
+  useEffect(() => {
+    // POST request
+    axios.post(`${apiUrl}/game/move`, {
+      id: id,
+      gameFen: fen,
+      gameHistory: moveHistory,
+      gameStyle: "standard",
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }, [moveHistory]);
 
   function onDrop(sourceSquare) {
     let sourceSq = sourceSquare.sourceSquare;
     let targetSq = sourceSquare.targetSquare;
     let piece = sourceSquare.piece;
     let moveObject = {};
-    let san = '';
 
     moveObject = chess.move({from: sourceSq, to: targetSq});
 
     //If the move is acceptable, send it to the server
     if(moveObject) {
-      //Find out SAN string
-      san = moveObject.san;
-
-      // POST request
-      axios.post(`${apiUrl}/game/${id}/${san}`
-      //,{
-        // playerTwo: 'Fred',
-      //}
-      )
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-      //Update chessboard and history
+      //Update fen and history
       updateFen(chess.fen());
       updateMoveHistory(chess.history());
     }
