@@ -21,7 +21,7 @@ function Game(props) {
     // axios.get('http://localhost:3000/game/333').then((res) => {
     //   console.log(res);
     // });
-    axios.get(`http://localhost:8000/api/game/${id}/${localStorage.getItem('userId')}`)
+    axios.get(`http://localhost:8000/api/game/${id}`)
     .then((response) => {
       console.log("friends data: ",response.data);
       setFriends(response.data);
@@ -99,8 +99,7 @@ function Game(props) {
     <div className="App">
       <Helmet><title>Game</title></Helmet>
       <Link to='/lobby' className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
-      <p>Player 1: {seeks._id} : {seeks.userId} : {seeks.playerOne}</p>
-      <p>Player 2: {friends._id} : {friends.friendId} : {friends.playerTwo}</p>
+      <p><b>PlayerOne: {friends.playerOne}</b> against <b>friendId: {friends.friendId}</b></p>
       <Chessboard
       position={fen}
       onDrop={onDrop}
