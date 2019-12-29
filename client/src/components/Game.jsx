@@ -115,7 +115,7 @@ function HistoryTable(props) {
   console.log(moveHistory);
 
   let tableRows = moveHistory.map( move => {
-    return <tr><td>{move}</td></tr>;
+    return <tr key={move.id}><td>{move}</td></tr>;
   });
 
   return(
