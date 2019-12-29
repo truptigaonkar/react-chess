@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet';
 import { Grid, CssBaseline, Paper, Typography, FormControlLabel, Checkbox, Box, TextField, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {ReactComponent as Crown} from '../resources/crown.svg';
+import { URL } from "../components/config";
 
 function Copyright() {
   return (
@@ -25,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     height: '100vh',
   },
   image: {
-    //backgroundImage: 'url(https://source.unsplash.com/random)',
+    backgroundImage: 'url(https://source.unsplash.com/random)',
     backgroundRepeat: 'no-repeat',
     backgroundColor:
       theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
@@ -71,7 +72,7 @@ const Login = () => {
   const handleAddUser = (e) => {
     e.preventDefault();
     //localStorage.setItem('userId', username )
-    axios.post('http://localhost:8000/api/seeks/', { userId: username })
+    axios.post(`${URL}/api/seeks/`, { userId: username })
       .then((res) => {      
         //setUsername('');
         setAuth(true);

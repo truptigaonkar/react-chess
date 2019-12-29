@@ -3,16 +3,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Helmet from 'react-helmet';
 import { Redirect, Link } from 'react-router-dom';
+import { URL } from "../components/config";
 
 const Lobby = () => {
   const [seeks, setSeeks] = useState([]);
   const [login, setLogin] = useState(false);
 
   useEffect(() => {
-    console.log(localStorage);
-    axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
+    axios.get(`${URL}/api/seeks/${localStorage.getItem('userId')}`)
       .then((response) => {
-        console.log(response.data);
         setSeeks(response.data);
       });
   }, []);
