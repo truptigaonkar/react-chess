@@ -55,10 +55,10 @@ const Lobby = () => {
               <tr key={seek.id}>
                 <td>{seek._id}</td>
                 <td>{seek.playerOne}</td>
-                <td>
+                {/* <td>
                   <Link to={`/game/${seek._id}`} className="btn btn-primary"><button type="submit">Play</button></Link>
-                  {!show && <button onClick={openModal}>Play With Friend</button>}
-                </td>
+                </td> */}
+                <td>{!show && <button onClick={openModal}>Play With Friend</button>}</td>
               </tr>
             </>
           ))}

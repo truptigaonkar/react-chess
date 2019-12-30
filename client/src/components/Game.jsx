@@ -14,7 +14,8 @@ function Game(props) {
   let [moveHistory, updateMoveHistory] = useState([]);
   let newHistory = [];
   let id = props.match.params.id;
-  let color = 'white';
+  const [friends, setFriends] = useState([]);
+  const [seeks, setSeeks] = useState([]);
 
   //Check for fen updates every second
   useEffect(() => {
@@ -40,6 +41,23 @@ function Game(props) {
       return clearTimeout(timer);
     };
   });
+
+  useEffect(() => {
+    // axios.get('http://localhost:3000/game/333').then((res) => {
+    //   console.log(res);
+    // });
+    axios.get(`http://localhost:8000/api/game/${id}`)
+    .then((response) => {
+      console.log("friends data: ",response.data);
+      setFriends(response.data);
+    });
+
+    axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
+      .then((response) => {
+        console.log("Seek data: ", response.data);
+        setSeeks(response.data);
+      });
+  }, []);
 
   //Share Chess with the other player
   // useEffect(() => {
@@ -150,6 +168,7 @@ function Game(props) {
     <div className="App">
       <Helmet><title>Game</title></Helmet>
       <Link to='/lobby' className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
+      <p><b>PlayerOne: {friends.playerOne}</b> against <b>friendId: {friends.friendId}</b></p>
       <Chessboard
       position={fen}
       onDrop={onDrop}
