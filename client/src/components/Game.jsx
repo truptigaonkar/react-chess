@@ -4,27 +4,31 @@ import Chess from 'chess.js';
 import Chessboard from 'chessboardjsx';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-let chess = new Chess();
 
 let apiUrl = 'http://localhost:8000/api';
 
 function Game(props) {
+  let [chess, updateChess] = useState(new Chess());
   let [fen, updateFen] = useState('start');
   let newFen = '';
   let [moveHistory, updateMoveHistory] = useState([]);
+  let newHistory = [];
   let id = props.match.params.id;
+  let color = 'white';
 
+  //Check for fen updates every second
   useEffect(() => {
     const timer = setInterval(() => {
       console.log('Checking for new fen.');
-      axios.get(`${apiUrl}/game/${id}`).then((response) => {
+      axios.get(`${apiUrl}/game/${id}`)
+      .then((response) => {
         console.log(response);
         newFen = response.data.fen;
         if(newFen === fen) {
           console.log('fen is unchanged.');
         }
         //If fen has changed, update fen
-        if(newFen !== fen) {
+        if(newFen && newFen !== fen) {
           console.log('Updating fen.');
           updateFen(newFen);
         }
@@ -37,21 +41,52 @@ function Game(props) {
     };
   });
 
-  useEffect(() => {
-    // POST request
-    axios.post(`${apiUrl}/game/move`, {
-      id: id,
-      gameFen: fen,
-      gameHistory: moveHistory,
-      gameStyle: "standard",
-    })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  }, [moveHistory]);
+  //Share Chess with the other player
+  // useEffect(() => {
+  //   axios.get(`${apiUrl}/game/${id}`)
+  //   .then(({ data, err }) => {
+  //     if (err) {
+  //       return console.log(err);
+  //     }
+  //     if (data.playerOne, data.playerTwo) {
+  //       const game = new Chess();
+  //       const pgn = ['[Event "Casual Game"]',
+  //         '[Site "Berlin GER"]',
+  //         '[Date "1852.??.??"]',
+  //         '[EventDate "?"]',
+  //         '[Round "?"]',
+  //         '[Result "1-0"]',
+  //         '[White "Adolf Anderssen"]',
+  //         '[Black "Jean Dufresne"]',
+  //         '[ECO "C52"]',
+  //         '[WhiteElo "?"]',
+  //         '[BlackElo "?"]',
+  //         '[PlyCount "47"]',
+  //         '',
+  //         '1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5 6.d4 exd4 7.O-O',
+  //         'd3 8.Qb3 Qf6 9.e5 Qg6 10.Re1 Nge7 11.Ba3 b5 12.Qxb5 Rb8 13.Qa4',
+  //         'Bb6 14.Nbd2 Bb7 15.Ne4 Qf5 16.Bxd3 Qh5 17.Nf6+ gxf6 18.exf6',
+  //         'Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8',
+  //         '23.Bd7+ Kf8 24.Bxe7# 1-0'];
+  //
+  //       game.load_pgn(pgn.join('\n'));
+  //
+  //       updateChess(game);
+  //       updateFen(game.fen())
+  //
+  //       console.log(game);
+  //     }
+  //   });
+
+  // do not pick up pieces if the game is over
+  // only pick up pieces for the side to move
+  // function onDragStart(source, piece, position, orientation) {
+  //   if (chess.game_over() === true ||
+  //       (chess.turn() === 'w' && piece.search(/^b/) !== -1) ||
+  //       (chess.turn() === 'b' && piece.search(/^w/) !== -1)) {
+  //     return false;
+  //   }
+  // };
 
   function onDrop(sourceSquare) {
     let sourceSq = sourceSquare.sourceSquare;
@@ -63,9 +98,28 @@ function Game(props) {
 
     //If the move is acceptable, send it to the server
     if(moveObject) {
+
+      //Creating variables
+      newFen = chess.fen();
+      newHistory = chess.history();
+
       //Update fen and history
-      updateFen(chess.fen());
-      updateMoveHistory(chess.history());
+      updateFen(newFen);
+      updateMoveHistory(newHistory);
+
+      //Send move to backend
+      axios.post(`${apiUrl}/game/move`, {
+        id: id,
+        gameFen: newFen, //State fen cannot be used since it may not be updated yet
+        gameHistory: newHistory,
+        gameStyle: "standard",
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     }
     else {
       console.log('ILLEGAL MOVE');
@@ -76,6 +130,20 @@ function Game(props) {
   function onClickReset(e) {
     chess.reset();
     updateFen(chess.fen());
+
+    //Send reset to backend
+    axios.post(`${apiUrl}/game/move`, {
+      id: id,
+      gameFen: 'start',
+      gameHistory: [],
+      gameStyle: "standard",
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
   }
 
   return (
