@@ -42,3 +42,22 @@ exports.gameMove = (req, res) => {
     return res.json({ fen, history, squareStyles });
   });
 };
+
+exports.deleteGame = (req, res) => {
+  const { id, userId } = req.body;
+  Game.findById(id).exec((err, game) => {
+    if (err) {
+      return res.json({ err: errorHandler(err) });
+    }
+    if (!game) {
+      return res.json({ err: 'this game not available just now' });
+    }
+    if (game) {
+      if (userId === game.playerOne && !game.playerTwo) {
+        game.remove();
+        return res.json({ message: 'this game created by this player' });
+      }
+      return res.json({ message: `this game created by this ${game.playerOne}` });
+    }
+  });
+};
