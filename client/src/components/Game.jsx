@@ -17,21 +17,117 @@ function Game(props) {
   const [friends, setFriends] = useState([]);
   const [seeks, setSeeks] = useState([]);
 
+  useEffect(() => {
+
+    axios.get(`http://localhost:8000/api/game/${id}`)
+    .then((response) => {
+      // console.log("friends data: ",response.data);
+      setFriends(response.data);
+    });
+
+    axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
+      .then((response) => {
+        // console.log("Seek data: ", response.data);
+        setSeeks(response.data);
+      });
+  }, []);
+
+  //Check if there are two players
+  //If there is a move history, add it to the Chess game
+  useEffect(() => {
+    axios.get(`${apiUrl}/game/${id}`)
+    .then(({ data, err }) => {
+      if (err) {
+        return console.log(err);
+      }
+      console.log('Check for players and move history');
+
+      if (data.playerOne, data.friendId) {
+        if(data.history.length > 0) {
+          console.log('history exist');
+          let history = data.history;
+          let historyWithNumbers = [];
+          console.log('history: ', history);
+          let firstMove = `1.${history[0]}`;
+          let moveString = '';
+
+          //Create new game
+          const game = new Chess();
+
+          //Converting move history into a string to use in pgn
+          let nr = 1;
+          let newString = '';
+          for(let i = 0; i < history.length; i++) {
+            if(i % 2 === 0) {
+              newString = `${nr}.${history[i]}`;
+              historyWithNumbers.push(newString);
+              nr++;
+            }
+            else {
+              historyWithNumbers.push(history[i]);
+            }
+          }
+          moveString = historyWithNumbers.join(' ');
+
+          let pgn = [
+            moveString,
+          ];
+
+          //With 'white' and 'black' tags
+          //let playerOne = data.playerOne;
+          //let playerTwo = data.playerTwo;
+          // pgn = [
+          //   `[White "${playerOne}"]`,
+          //   '[Black "Jean Dufresne"]',
+          //   firstMove,
+          // ];
+
+          //Load moves to Chess + update states chess and fen
+          game.load_pgn(pgn.join('\n'));
+          updateChess(game);
+          updateFen(game.fen());
+          updateMoveHistory(game.history());
+          //console.log(game);
+        }
+        else {
+          console.log('no history');
+        }
+      }
+    });
+  }, []);
+
   //Check for fen updates every second
   useEffect(() => {
     const timer = setInterval(() => {
-      console.log('Checking for new fen.');
+      //console.log('Checking for new fen.');
       axios.get(`${apiUrl}/game/${id}`)
       .then((response) => {
-        console.log(response);
+        //console.log(response);
         newFen = response.data.fen;
-        if(newFen === fen) {
-          console.log('fen is unchanged.');
-        }
         //If fen has changed, update fen
         if(newFen && newFen !== fen) {
-          console.log('Updating fen.');
+
+          //Trying to update chess by loading fen
+          console.log('Updating Chess.');
+          let game = new Chess();
+          game.load(newFen);
+          console.log('game: ', game);
+          updateChess(game);
+
+          //Trying to update chess with move
+          //newHistory = response.data.history;
+          // console.log('newHistory: ', newHistory);
+          // console.log('newHistory.length - 1: ', newHistory.length - 1);
+          // let latestMove = newHistory[newHistory.length - 1];
+          // let move = chess.move(latestMove);
+          // if(!move) {
+          //   console.log('Move was not accepted.');
+          // }
+
+          console.log('newFen: ', newFen);
           updateFen(newFen);
+          console.log('response.data.history: ', response.data.history);
+          updateMoveHistory(response.data.history);
         }
       });
     }, 1000);
@@ -41,60 +137,6 @@ function Game(props) {
       return clearTimeout(timer);
     };
   });
-
-  useEffect(() => {
-    // axios.get('http://localhost:3000/game/333').then((res) => {
-    //   console.log(res);
-    // });
-    axios.get(`http://localhost:8000/api/game/${id}`)
-    .then((response) => {
-      console.log("friends data: ",response.data);
-      setFriends(response.data);
-    });
-
-    axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
-      .then((response) => {
-        console.log("Seek data: ", response.data);
-        setSeeks(response.data);
-      });
-  }, []);
-
-  //Share Chess with the other player
-  // useEffect(() => {
-  //   axios.get(`${apiUrl}/game/${id}`)
-  //   .then(({ data, err }) => {
-  //     if (err) {
-  //       return console.log(err);
-  //     }
-  //     if (data.playerOne, data.playerTwo) {
-  //       const game = new Chess();
-  //       const pgn = ['[Event "Casual Game"]',
-  //         '[Site "Berlin GER"]',
-  //         '[Date "1852.??.??"]',
-  //         '[EventDate "?"]',
-  //         '[Round "?"]',
-  //         '[Result "1-0"]',
-  //         '[White "Adolf Anderssen"]',
-  //         '[Black "Jean Dufresne"]',
-  //         '[ECO "C52"]',
-  //         '[WhiteElo "?"]',
-  //         '[BlackElo "?"]',
-  //         '[PlyCount "47"]',
-  //         '',
-  //         '1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5 6.d4 exd4 7.O-O',
-  //         'd3 8.Qb3 Qf6 9.e5 Qg6 10.Re1 Nge7 11.Ba3 b5 12.Qxb5 Rb8 13.Qa4',
-  //         'Bb6 14.Nbd2 Bb7 15.Ne4 Qf5 16.Bxd3 Qh5 17.Nf6+ gxf6 18.exf6',
-  //         'Rg8 19.Rad1 Qxf3 20.Rxe7+ Nxe7 21.Qxd7+ Kxd7 22.Bf5+ Ke8',
-  //         '23.Bd7+ Kf8 24.Bxe7# 1-0'];
-  //
-  //       game.load_pgn(pgn.join('\n'));
-  //
-  //       updateChess(game);
-  //       updateFen(game.fen())
-  //
-  //       console.log(game);
-  //     }
-  //   });
 
   // do not pick up pieces if the game is over
   // only pick up pieces for the side to move
@@ -112,6 +154,9 @@ function Game(props) {
     let piece = sourceSquare.piece;
     let moveObject = {};
 
+    let oldHistory = chess.history();
+    console.log('onDrop old history: ', oldHistory);
+
     moveObject = chess.move({from: sourceSq, to: targetSq});
 
     //If the move is acceptable, send it to the server
@@ -120,6 +165,9 @@ function Game(props) {
       //Creating variables
       newFen = chess.fen();
       newHistory = chess.history();
+
+      console.log('onDrop new fen: ', newFen);
+      console.log('onDrop new history: ', newHistory);
 
       //Update fen and history
       updateFen(newFen);
@@ -133,6 +181,7 @@ function Game(props) {
         gameStyle: "standard",
       })
       .then(function (response) {
+        console.log('POST response in onDrop');
         console.log(response);
       })
       .catch(function (error) {
@@ -182,7 +231,6 @@ function Game(props) {
 function HistoryTable(props) {
   let moveHistory = props.moveHistory;
   let whitePlayer = true;
-  console.log(moveHistory);
 
   let tableRows = moveHistory.map( move => {
     if(whitePlayer) {
