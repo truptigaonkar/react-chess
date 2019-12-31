@@ -2,6 +2,7 @@ const request = require('supertest');
 
 const url = 'http://localhost:8000/api';
 const testId = 'testUser';
+const shortId = 'boo';
 
 describe('GET /seeks', () => {
   it('succeeds with /seeks/userId', async () => {
@@ -15,16 +16,17 @@ describe('GET /seeks', () => {
   it('fails without userId', async () => {
     const response = await request(url)
       .get('/seeks');
+      //.expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(404);
   });
 });
 
 describe('POST /seeks', () => {
-  it('succeeds when userId is sent', async () => {
+  it('succeeds when valid userId is sent', async () => {
     const response = await request(url)
       .post('/seeks')
       .send({ userId: testId })
-      .expect('Content-Type', 'application/json; charset=utf-8');
+      .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
     expect(typeof response.body).toBe('object');
     expect(response.body).toHaveProperty('_id');
@@ -35,58 +37,75 @@ describe('POST /seeks', () => {
 
   it('fails without userId', async () => {
     const response = await request(url)
-      .post('/seeks');
+      .post('/seeks')
+      .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
+    expect(response.body.err).toEqual('userId is required');
   });
 
-  it('returns error when userId is shorter than 5 characters', async () => {
-    const shortId = 'boo';
+  it('fails when userId is shorter than 5 characters', async () => {
     const response = await request(url)
       .post('/seeks')
       .send({ userId: shortId })
-      .expect('Content-Type', 'application/json; charset=utf-8');
+      .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
     expect(typeof response.body).toBe('object');
-    expect(response.body).toHaveProperty('err');
-    expect(response.body.err).toEqual('must be at least 5 letters long');
+    expect(response.body.err).toEqual('userId must be at least 5 characters long');
   });
 });
 
+describe('POST /withFriend', () => {
+  const validFriend = 'testFriend';
+  it('succeeds when valid userId is sent', async () => {
+    const response = await request(url)
+      .post('/withFriend')
+      .send({ userId: testId, friendId: validFriend })
+      .expect('Content-Type', /json/);
+    expect(response.statusCode).toEqual(200);
+    expect(typeof response.body).toBe('object');
+    expect(response.body).toHaveProperty('_id');
+    expect(response.body).toHaveProperty('friendId');
+    expect(response.body.withFriend).toEqual(true);
+    expect(response.body.friendId).toEqual(validFriend);
+  });
 
-/*   
-    it('Add game proposal', () => {
-    let initialArrayLength = 0;
-    let newArrayLength = 0;
-    let newArray = [];
-    let gameId = '';
-    //First request
-    return request(url)
-    .get('/seeks')
-    .then(response => {
-      //Check initial array length
-      initialArrayLength = response.body.data.length;
-    })
-    .then(() => {
-      //Second request
-      request(url)
-      .post(/seeks)
-      .then(response => {
-        //Save game id that the server responds with
-        gameId = response.body.data.id;
-      })
-    })
-    .then(() => {
-      //Third request
-      request(url)
-      .get(/seeks)
-      .then(response => {
-        //Check new array length and id
-        newArray = response.body.data;
-        newArrayLength = response.body.data.length;
-        expect(newArrayLength).toBe(initialArrayLength + 1);
-        //Check that the game proposal was added to the array
-        expect(newArray).toContain(gameId); // OBS Assumes that a game proposal is saved as a string
-      })
-    })
-  }); */
+  it('fails without userId', async () => {
+    const response = await request(url)
+      .post('/withFriend')
+      .send({ friendId: validFriend })
+      .expect('Content-Type', /json/);
+    expect(response.statusCode).toEqual(422);
+    expect(response.body.err).toEqual('userId is required');
+  });
 
+  it('fails without friendId', async () => {
+    const response = await request(url)
+      .post('/withFriend')
+      .send({ userId: testId })
+      .expect('Content-Type', /json/);
+    expect(response.statusCode).toEqual(422);
+    expect(response.body.err).toEqual('friendId is required');
+  });
+
+  it('fails when userId is shorter than 5 characters', async () => {
+    const response = await request(url)
+      .post('/withFriend')
+      .send({ userId: shortId, friendId: validFriend })
+      .expect('Content-Type', /json/);
+    expect(response.statusCode).toEqual(422);
+    expect(typeof response.body).toBe('object');
+    expect(response.body).toHaveProperty('err');
+    expect(response.body.err).toEqual('userId must be at least 5 characters long');
+  });
+
+  it('fails when friendId is shorter than 5 characters', async () => {
+    const response = await request(url)
+      .post('/withFriend')
+      .send({ userId: testId, friendId: shortId })
+      .expect('Content-Type', /json/);
+    expect(response.statusCode).toEqual(422);
+    expect(typeof response.body).toBe('object');
+    expect(response.body).toHaveProperty('err');
+    expect(response.body.err).toEqual('friendId must be at least 5 characters long');
+  });
+});

@@ -4,7 +4,7 @@ const { errorHandler } = require('../helpers/dbErrorHandler');
 
 exports.allMatches = (req, res) => {
   const { userId } = req.params;
-  Game.find({ withFriend: false, startedBy: { $ne: userId }, playerTwo: { $ne: userId } }).exec((err, games) => {
+  Seek.find({ withFriend: false, startedBy: { $ne: userId }, playerTwo: { $ne: userId } }).exec((err, games) => {
     if (err) {
       return res.status(400).json({
         err: errorHandler(err),
