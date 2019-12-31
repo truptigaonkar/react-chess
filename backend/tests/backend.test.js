@@ -1,34 +1,59 @@
 const request = require('supertest');
-const url = 'http://localhost:8000';
 
-afterEach(() => {
+const url = 'http://localhost:8000/api';
+const testId = 'testUser';
 
+describe('GET /seeks', () => {
+  it('succeeds with /seeks/userId', async () => {
+    const response = await request(url)
+      .get(`/seeks/${testId}`)
+      .expect('Content-Type', 'application/json; charset=utf-8');
+    expect(response.statusCode).toEqual(200);
+    expect(typeof response.body).toBe('object');
+  });
+
+  it('fails without userId', async () => {
+    const response = await request(url)
+      .get('/seeks');
+    expect(response.statusCode).toEqual(404);
+  });
 });
 
-describe('Backend test', () => {
-  it('GET /seeks returns an array', () => {
-    return request(url)
-    .get('/seeks')
-    .expect('Content-Type', /json/)
-    .expect(200)
-    .then(response => {
-      expect(typeof response.body.data).toBe('array');
-    })
+describe('POST /seeks', () => {
+  it('succeeds when userId is sent', async () => {
+    const response = await request(url)
+      .post('/seeks')
+      .send({ userId: testId })
+      .expect('Content-Type', 'application/json; charset=utf-8');
+    expect(response.statusCode).toEqual(200);
+    expect(typeof response.body).toBe('object');
+    expect(response.body).toHaveProperty('_id');
+    expect(response.body).toHaveProperty('playerOne');
+    expect(response.body.finished).toEqual(false);
+    expect(response.body.startedBy).toEqual(testId);
   });
-  
-  //Should you send any data when you post to /seeks?
-  it('POST /seeks returns an object with an id key', () => {
-    return request(url)
-    .post('/seeks')
-    .expect('Content-Type', /json/)
-    .expect(200)
-    .then(response => {
-      expect(typeof response.body.data).toBe('object');
-      expect(response.body.data).toHaveProperty('userId');
-      expect(typeof response.body.data.userId).toBe('string');
-    })
+
+  it('fails without userId', async () => {
+    const response = await request(url)
+      .post('/seeks');
+    expect(response.statusCode).toEqual(422);
   });
-  
+
+  it('returns error when userId is shorter than 5 characters', async () => {
+    const shortId = 'boo';
+    const response = await request(url)
+      .post('/seeks')
+      .send({ userId: shortId })
+      .expect('Content-Type', 'application/json; charset=utf-8');
+    expect(response.statusCode).toEqual(422);
+    expect(typeof response.body).toBe('object');
+    expect(response.body).toHaveProperty('err');
+    expect(response.body.err).toEqual('must be at least 5 letters long');
+  });
+});
+
+
+/*   
     it('Add game proposal', () => {
     let initialArrayLength = 0;
     let newArrayLength = 0;
@@ -63,6 +88,5 @@ describe('Backend test', () => {
         expect(newArray).toContain(gameId); // OBS Assumes that a game proposal is saved as a string
       })
     })
-  }); 
-});
+  }); */
 
