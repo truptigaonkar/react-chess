@@ -102,32 +102,19 @@ function Game(props) {
       //console.log('Checking for new fen.');
       axios.get(`${apiUrl}/game/${id}`)
       .then((response) => {
-        //console.log(response);
         newFen = response.data.fen;
-        //If fen has changed, update fen
+
+        //If fen has changed, update chess, fen and history
         if(newFen && newFen !== fen) {
 
-          //Trying to update chess by loading fen
-          console.log('Updating Chess.');
-          let game = new Chess();
-          game.load(newFen);
-          console.log('game: ', game);
-          updateChess(game);
+          //Adding move to chess
+          newHistory = response.data.history;
+          let latestMove = newHistory[newHistory.length - 1];
+          chess.move(latestMove);
 
-          //Trying to update chess with move
-          //newHistory = response.data.history;
-          // console.log('newHistory: ', newHistory);
-          // console.log('newHistory.length - 1: ', newHistory.length - 1);
-          // let latestMove = newHistory[newHistory.length - 1];
-          // let move = chess.move(latestMove);
-          // if(!move) {
-          //   console.log('Move was not accepted.');
-          // }
-
-          console.log('newFen: ', newFen);
+          //Updating fen and history
           updateFen(newFen);
-          console.log('response.data.history: ', response.data.history);
-          updateMoveHistory(response.data.history);
+          updateMoveHistory(newHistory);
         }
       });
     }, 1000);
@@ -154,9 +141,6 @@ function Game(props) {
     let piece = sourceSquare.piece;
     let moveObject = {};
 
-    let oldHistory = chess.history();
-    console.log('onDrop old history: ', oldHistory);
-
     moveObject = chess.move({from: sourceSq, to: targetSq});
 
     //If the move is acceptable, send it to the server
@@ -165,9 +149,6 @@ function Game(props) {
       //Creating variables
       newFen = chess.fen();
       newHistory = chess.history();
-
-      console.log('onDrop new fen: ', newFen);
-      console.log('onDrop new history: ', newHistory);
 
       //Update fen and history
       updateFen(newFen);
@@ -181,8 +162,8 @@ function Game(props) {
         gameStyle: "standard",
       })
       .then(function (response) {
-        console.log('POST response in onDrop');
-        console.log(response);
+        //console.log('POST response in onDrop');
+        //console.log(response);
       })
       .catch(function (error) {
         console.log(error);
@@ -206,7 +187,7 @@ function Game(props) {
       gameStyle: "standard",
     })
     .then(function (response) {
-      console.log(response);
+      //console.log(response);
     })
     .catch(function (error) {
       console.log(error);
