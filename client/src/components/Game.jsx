@@ -139,12 +139,21 @@ function Game(props) {
     let sourceSq = sourceSquare.sourceSquare;
     let targetSq = sourceSquare.targetSquare;
     let piece = sourceSquare.piece;
-    let moveObject = {};
+    let pieceType = piece.split('')[1];
+    let isCapture = chess.get(targetSq);
+    let sloppyMove = '';
 
-    moveObject = chess.move({from: sourceSq, to: targetSq});
+    if(isCapture) {
+      sloppyMove = pieceType + sourceSq + 'x' + targetSq;
+    }
+    else {
+      sloppyMove = pieceType + sourceSq + targetSq;
+    }
+
+    let move = chess.move(sloppyMove, {sloppy: true});
 
     //If the move is acceptable, send it to the server
-    if(moveObject) {
+    if(move) {
 
       //Creating variables
       newFen = chess.fen();
@@ -171,7 +180,6 @@ function Game(props) {
     }
     else {
       console.log('ILLEGAL MOVE');
-      //Is there a piece in the target square?
     }
   }
 
