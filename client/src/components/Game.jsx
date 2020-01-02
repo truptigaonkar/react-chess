@@ -43,6 +43,7 @@ function Game(props) {
         return console.log(err);
       }
       console.log('Check for players and move history');
+      console.log('data: ', data);
 
       if (data.playerOne, data.friendId) {
         if(data.history.length > 0) {
@@ -120,8 +121,9 @@ function Game(props) {
 
           //Checking if the game is over
           if(chess.game_over()) {
-            console.log('Game over.');
+            //Do something...
           }
+
         }
       });
     }, 1000);
@@ -171,9 +173,9 @@ function Game(props) {
 
   // show possible moves
   const highlightSquare = (sourceSquare, squaresToHighlight) => {
-    console.log('highlightSquare');
-    console.log('moveHistory: ', moveHistory);
-    console.log('pieceSquare: ', pieceSquare);
+    // console.log('highlightSquare');
+    // console.log('moveHistory: ', moveHistory);
+    // console.log('pieceSquare: ', pieceSquare);
     const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
       (a, c) => ({
         ...a,
@@ -215,7 +217,7 @@ function Game(props) {
       squaresToHighlight.push(moves[i].to);
     }
 
-    console.log('squaresToHighlight: ', squaresToHighlight);
+    //console.log('squaresToHighlight: ', squaresToHighlight);
 
     highlightSquare(square, squaresToHighlight);
   }
@@ -321,18 +323,35 @@ function Game(props) {
 }
 
 function HistoryTable(props) {
-  let moveHistory = props.moveHistory;
+  let moves = props.moveHistory;
   let whitePlayer = true;
 
-  let tableRows = moveHistory.map( move => {
-    if(whitePlayer) {
-      return <tr><td>{move}</td></tr>;
-    }
-    else {
-      return <td>{move}</td>;
-    }
-    whitePlayer = !whitePlayer;
-  });
+  // let tableRows = moveHistory.map( move => {
+  //   if(whitePlayer) {
+  //     return <tr><td>{move}</td></tr>;
+  //   }
+  //   else {
+  //     return <td>{move}</td>;
+  //   }
+  //   whitePlayer = !whitePlayer;
+  // });
+
+  let tableRows = [];
+  let round = 1;
+  let whiteMove = '';
+  let blackMove = '';
+  for(let i = 0; i < moves.length; i += 2) {
+    whiteMove = moves[i];
+    blackMove = moves[i+1];
+    tableRows.push(
+      <tr>
+        <td>{round}</td>
+        <td>{whiteMove}</td>
+        <td>{blackMove}</td>
+      </tr>
+      );
+    round++;
+  }
 
   return(
     <table>
