@@ -16,6 +16,8 @@ function Game(props) {
   let id = props.match.params.id;
   const [friends, setFriends] = useState([]);
   const [seeks, setSeeks] = useState([]);
+  let [squareStyles, updateSquareStyles] = useState({});
+  let [pieceSquare, updatePieceSquare] = useState('');
 
   useEffect(() => {
 
@@ -115,12 +117,17 @@ function Game(props) {
           //Updating fen and history
           updateFen(newFen);
           updateMoveHistory(newHistory);
+
+          //Checking if the game is over
+          if(chess.game_over()) {
+            console.log('Game over.');
+          }
         }
       });
     }, 1000);
 
     return () => {
-      console.log('clean');
+      // console.log('clean');
       return clearTimeout(timer);
     };
   });
@@ -128,12 +135,104 @@ function Game(props) {
   // do not pick up pieces if the game is over
   // only pick up pieces for the side to move
   // function onDragStart(source, piece, position, orientation) {
+  //   console.log('onDragStart');
+  //   console.log('chess.turn(): ', chess.turn());
   //   if (chess.game_over() === true ||
   //       (chess.turn() === 'w' && piece.search(/^b/) !== -1) ||
   //       (chess.turn() === 'b' && piece.search(/^w/) !== -1)) {
   //     return false;
   //   }
   // };
+
+  // function onPieceClick(piece) {
+    //console.log(`${piece} was clicked.`);
+    // let allowed = chess.allowDrag();
+    // console.log('allowed? ' + allowed);
+  //}
+
+  const squareStyling = ({ pieceSquare, history }) => {
+    const sourceSquare = history.length && history[history.length - 1].from;
+    const targetSquare = history.length && history[history.length - 1].to;
+
+    return {
+      [pieceSquare]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' },
+      ...(history.length && {
+        [sourceSquare]: {
+          backgroundColor: 'rgba(255, 255, 0, 0.4)',
+        },
+      }),
+      ...(history.length && {
+        [targetSquare]: {
+          backgroundColor: 'rgba(255, 255, 0, 0.4)',
+        },
+      }),
+    };
+  };
+
+  // show possible moves
+  const highlightSquare = (sourceSquare, squaresToHighlight) => {
+    console.log('highlightSquare');
+    console.log('moveHistory: ', moveHistory);
+    console.log('pieceSquare: ', pieceSquare);
+    const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
+      (a, c) => ({
+        ...a,
+        ...{
+          [c]: {
+            background:
+                'radial-gradient(circle, #fffc00 36%, transparent 40%)',
+            borderRadius: '50%',
+          },
+        },
+        ...squareStyling({
+          history: moveHistory,
+          pieceSquare: pieceSquare,
+        }),
+      }),
+      {},
+    );
+
+    updateSquareStyles({ ...highlightStyles });
+  };
+
+  // keep clicked square style and remove hint squares
+  function removeHighlightSquare() {
+    //setState({ ...state, pieceSquare, history });
+  };
+
+  function onMouseOverSquare(square) {
+    // get list of possible moves for this square
+    const moves = chess.moves({
+      square,
+      verbose: true,
+    });
+
+    // exit if there are no moves available for this square
+    if (moves.length === 0) return;
+
+    const squaresToHighlight = [];
+    for (let i = 0; i < moves.length; i++) {
+      squaresToHighlight.push(moves[i].to);
+    }
+
+    console.log('squaresToHighlight: ', squaresToHighlight);
+
+    highlightSquare(square, squaresToHighlight);
+  }
+
+  function onMouseOutSquare(square) {
+    removeHighlightSquare(square);
+  }
+
+  function onSquareClick(square) {
+    console.log(`${square} was clicked`);
+    //let piece = chess.get(square);
+    //console.log(`piece: ${piece.type}`);
+
+    //Update states
+    updateSquareStyles(squareStyling({ pieceSquare: square, moveHistory }));
+    updatePieceSquare(square);
+  }
 
   function onDrop(sourceSquare) {
     let sourceSq = sourceSquare.sourceSquare;
@@ -209,6 +308,10 @@ function Game(props) {
       <p><b>PlayerOne: {friends.playerOne}</b> against <b>friendId: {friends.friendId}</b></p>
       <Chessboard
       position={fen}
+      squareStyles={squareStyles}
+      onMouseOverSquare={onMouseOverSquare}
+      onMouseOutSquare={onMouseOutSquare}
+      onSquareClick={onSquareClick}
       onDrop={onDrop}
       />
       <HistoryTable moveHistory={moveHistory}/>
