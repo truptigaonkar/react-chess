@@ -6,6 +6,8 @@ const shortId = 'boo';
 const validFriend = 'testFriend';
 const gameId = '5e04ad71e8296713c02b218f';
 
+
+
 describe('GET /seeks', () => {
   it('succeeds with /seeks/userId', async () => {
     const response = await request(url)
