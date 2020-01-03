@@ -8,31 +8,45 @@ import { Link } from 'react-router-dom';
 let apiUrl = 'http://localhost:8000/api';
 
 function Game(props) {
+  let id = props.match.params.id;
+  let newFen = '';
+  let newHistory = [];
   let [chess, updateChess] = useState(new Chess());
   let [fen, updateFen] = useState('start');
-  let newFen = '';
   let [moveHistory, updateMoveHistory] = useState([]);
-  let newHistory = [];
-  let id = props.match.params.id;
-  const [friends, setFriends] = useState([]);
-  const [seeks, setSeeks] = useState([]);
+  let [playerOne, updatePlayerOne] = useState('');
+  let [playerTwo, updatePlayerTwo] = useState('');
+  //const [friends, setFriends] = useState([]);
+  //const [seeks, setSeeks] = useState([]);
   let [squareStyles, updateSquareStyles] = useState({});
   let [pieceSquare, updatePieceSquare] = useState('');
+  let [check, updateCheck] = useState(false);
+  let [winner, updateWinner] = useState('');
+  let [draw, updateDraw] = useState(false);
+  let [drawReason, updateDrawReason] = useState('');
 
-  useEffect(() => {
+  //Play a random game
+  // useEffect(() => {
+  //   while (!chess.game_over()) {
+  //     var moves = chess.moves();
+  //     var move = moves[Math.floor(Math.random() * moves.length)];
+  //     chess.move(move);
+  //     //Update fen and history
+  //     updateFen(chess.fen());
+  //     updateMoveHistory(chess.history());
+  //     //Check for game over
+  //     checkForCheck();
+  //     checkForGameOver();
+  //   }
+  // }, []);
 
-    axios.get(`http://localhost:8000/api/game/${id}`)
-    .then((response) => {
-      // console.log("friends data: ",response.data);
-      setFriends(response.data);
-    });
-
-    axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
-      .then((response) => {
-        // console.log("Seek data: ", response.data);
-        setSeeks(response.data);
-      });
-  }, []);
+  // useEffect(() => {
+    // axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
+    //   .then((response) => {
+    //     console.log("Seek data: ", response.data);
+    //     setSeeks(response.data);
+    //   });
+  // }, []);
 
   //Check if there are two players
   //If there is a move history, add it to the Chess game
@@ -42,10 +56,10 @@ function Game(props) {
       if (err) {
         return console.log(err);
       }
-      console.log('Check for players and move history');
-      console.log('data: ', data);
-
       if (data.playerOne, data.friendId) {
+        updatePlayerOne(data.playerOne);
+        updatePlayerTwo(data.friendId);
+
         if(data.history.length > 0) {
           console.log('history exist');
           let history = data.history;
@@ -72,17 +86,16 @@ function Game(props) {
           }
           moveString = historyWithNumbers.join(' ');
 
+          //Without 'white' and 'black' tags
           let pgn = [
             moveString,
           ];
 
           //With 'white' and 'black' tags
-          //let playerOne = data.playerOne;
-          //let playerTwo = data.playerTwo;
           // pgn = [
-          //   `[White "${playerOne}"]`,
+          //   `[White ${playerOne}]`,
           //   '[Black "Jean Dufresne"]',
-          //   firstMove,
+          //   moveString,
           // ];
 
           //Load moves to Chess + update states chess and fen
@@ -90,7 +103,7 @@ function Game(props) {
           updateChess(game);
           updateFen(game.fen());
           updateMoveHistory(game.history());
-          //console.log(game);
+          console.log('game: ', game);
         }
         else {
           console.log('no history');
@@ -119,38 +132,23 @@ function Game(props) {
           updateFen(newFen);
           updateMoveHistory(newHistory);
 
-          //Checking if the game is over
-          if(chess.game_over()) {
-            //Do something...
-          }
-
+          checkForCheck();
+          checkForGameOver();
         }
       });
     }, 1000);
 
     return () => {
-      // console.log('clean');
+      //console.log('clean');
       return clearTimeout(timer);
     };
-  });
+  }, []);
 
-  // do not pick up pieces if the game is over
-  // only pick up pieces for the side to move
-  // function onDragStart(source, piece, position, orientation) {
-  //   console.log('onDragStart');
-  //   console.log('chess.turn(): ', chess.turn());
-  //   if (chess.game_over() === true ||
-  //       (chess.turn() === 'w' && piece.search(/^b/) !== -1) ||
-  //       (chess.turn() === 'b' && piece.search(/^w/) !== -1)) {
-  //     return false;
-  //   }
-  // };
-
-  // function onPieceClick(piece) {
-    //console.log(`${piece} was clicked.`);
-    // let allowed = chess.allowDrag();
-    // console.log('allowed? ' + allowed);
-  //}
+  function onPieceClick(piece) {
+    console.log(`${piece} was clicked.`);
+    let allowed = chess.allowDrag();
+    console.log('allowed? ' + allowed);
+  }
 
   const squareStyling = ({ pieceSquare, history }) => {
     const sourceSquare = history.length && history[history.length - 1].from;
@@ -171,7 +169,7 @@ function Game(props) {
     };
   };
 
-  // show possible moves
+  // Show possible moves
   const highlightSquare = (sourceSquare, squaresToHighlight) => {
     // console.log('highlightSquare');
     // console.log('moveHistory: ', moveHistory);
@@ -202,7 +200,45 @@ function Game(props) {
     //setState({ ...state, pieceSquare, history });
   };
 
+  function checkForCheck() {
+    if(chess.in_check()) {
+      updateCheck(true);
+    }
+    else {
+      updateCheck(false);
+    }
+  }
+
+  function checkForGameOver() {
+    if(chess.game_over()) {
+      if(chess.in_checkmate()) {
+        //The winner is the last player making a move
+        let playerInTurn = chess.turn();
+        if(playerInTurn === 'w') {
+          updateWinner('black player');
+        }
+        else {
+          updateWinner('white player');
+        }
+      }
+      else if(chess.in_draw()) {
+        updateDraw(true);
+        //Check for draw reasons
+        if(chess.in_stalemate()) {
+          updateDrawReason('stalemate');
+        }
+        else if(chess.insufficient_material()) {
+          updateDrawReason('insufficient material');
+        }
+      }
+    }
+  }
+
   function onMouseOverSquare(square) {
+    if(winner || draw) {
+      return;
+    }
+
     // get list of possible moves for this square
     const moves = chess.moves({
       square,
@@ -278,9 +314,10 @@ function Game(props) {
       .catch(function (error) {
         console.log(error);
       });
-    }
-    else {
-      console.log('ILLEGAL MOVE');
+
+      //Check for check + game over
+      checkForCheck();
+      checkForGameOver();
     }
   }
 
@@ -307,7 +344,11 @@ function Game(props) {
     <div className="App">
       <Helmet><title>Game</title></Helmet>
       <Link to='/lobby' className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
-      <p><b>PlayerOne: {friends.playerOne}</b> against <b>friendId: {friends.friendId}</b></p>
+      <p><b>{playerOne}</b> against <b>{playerTwo}</b></p>
+      { winner ? <h2>{winner} won!</h2> : null }
+      { draw ? <h2>Remi!</h2> : null }
+      { drawReason ? <h3>Game was drawn due to {drawReason}</h3> : null }
+      { check && !winner && !draw ? <h2>Check!</h2> : null }
       <Chessboard
       position={fen}
       squareStyles={squareStyles}
@@ -325,16 +366,6 @@ function Game(props) {
 function HistoryTable(props) {
   let moves = props.moveHistory;
   let whitePlayer = true;
-
-  // let tableRows = moveHistory.map( move => {
-  //   if(whitePlayer) {
-  //     return <tr><td>{move}</td></tr>;
-  //   }
-  //   else {
-  //     return <td>{move}</td>;
-  //   }
-  //   whitePlayer = !whitePlayer;
-  // });
 
   let tableRows = [];
   let round = 1;
