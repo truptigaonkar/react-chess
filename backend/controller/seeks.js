@@ -23,12 +23,13 @@ exports.newMatches = (req, res) => {
     }
     if (!seeker) {
       const newSeeker = new Seek({ userId });
-      return newSeeker.save((newErr, resSeeker) => {
+      newSeeker.save((newErr, resSeeker) => {
         if (newErr) {
           return res.status(400).json({
             err: errorHandler(newErr),
           });
         }
+        return res.json(resSeeker);
       });
     }
     const game = new Game({ playerOne: userId, startedBy: userId });
