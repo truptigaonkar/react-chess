@@ -14,13 +14,13 @@ Sprint 3: 7-13 January 2020
 - Basel reviews codes for Elin, Trupti and Ayumi. Basel’s codes are reviewed by Elin during sprint 1, by Trupti during sprint 2 and by Ayumi during sprint 3.
 
 - We follow Gitflow.
-1. A develop branch is created from master
-2. A release branch is created from develop
-3. Feature branches are created from develop
-4. When a feature is complete it is merged into the develop branch
-5. When the release branch is done it is merged into develop and master
-6. If an issue in master is detected a hotfix branch is created from master
-7. Once the hotfix is complete it is merged to both develop and master
+1. A develop branch is created from master.
+2. A release branch is created from develop.
+3. Feature branches are created from develop.
+4. When a feature is complete it is merged into the develop branch.
+5. When the release branch is done it is merged into develop and master.
+6. If an issue in master is detected a hotfix branch is created from master.
+7. Once the hotfix is complete it is merged to both develop and master.
 8. The beginning of titles of Github issues specify names of the branches.
 
 ## Responsibilities
