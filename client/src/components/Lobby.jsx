@@ -44,7 +44,7 @@ const Lobby = () => {
         </thead>
         <tbody>
           {seeks.map((seek) => (
-              <tr key={seek.id}>
+              <tr key={seek._id}>
                 <td>{seek._id}</td>
                 <td>{seek.playerOne}</td>
                 <td>

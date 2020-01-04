@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { Grid, CssBaseline, Paper, Typography, FormControlLabel, Checkbox, Box, TextField, Button } from '@material-ui/core';
+import { Grid, CssBaseline, Paper, Typography, FormControlLabel, Checkbox, Box, TextField, Button, Link } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {ReactComponent as Crown} from '../resources/crown.svg';
 import { URL } from "../components/config";
