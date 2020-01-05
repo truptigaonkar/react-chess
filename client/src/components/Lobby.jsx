@@ -4,6 +4,7 @@ import axios from 'axios';
 import Helmet from 'react-helmet';
 import { Redirect, Link } from 'react-router-dom';
 import { URL } from "../components/config";
+import { TableContainer, Table, TableHead, TableRow, TableCell,TableBody, Paper, Button, Breadcrumbs, Typography, CssBaseline, Container } from '@material-ui/core';
 
 const Lobby = () => {
   const [seeks, setSeeks] = useState([]);
@@ -33,27 +34,34 @@ const Lobby = () => {
   return (
     <>
       <Helmet><title>Lobby</title></Helmet>
-      <button type="submit" onClick={handleLogout}>Logout</button>
-      <table border='1px solid black'>
-        <thead>
-          <tr>
-            <th>_id</th>
-            <th>Player One</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {seeks.map((seek) => (
-              <tr key={seek._id}>
-                <td>{seek._id}</td>
-                <td>{seek.playerOne}</td>
-                <td>
-                  <Link to={`/game/${seek._id}`} className="btn btn-primary"><button type="submit">Play</button></Link>
-                </td>
-              </tr>
+      <Container>
+      <Breadcrumbs aria-label="breadcrumb">
+  <Link color="inherit" href="/" onClick={handleLogout}>
+    Start
+  </Link>
+  <Typography color="textPrimary">Lobby</Typography>
+</Breadcrumbs><br />
+      <TableContainer component={Paper} style={{width:'250px'}}>
+      <Table size="small" aria-label="a dense table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Players</TableCell>
+            <TableCell align="right">Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {seeks.map(seek => (
+            <TableRow key={seek._id}>
+              <TableCell component="th" scope="seek">
+                {seek.playerOne}
+              </TableCell>
+              <TableCell align="right"><Link to={`/game/${seek._id}`} style={{ textDecoration: 'none' }}><Button type="submit" variant="contained" color="primary" size="small">Play</Button></Link></TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
+    </TableContainer>
+    </Container>
     </>
   );
 };
