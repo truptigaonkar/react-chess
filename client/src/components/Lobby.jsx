@@ -5,10 +5,15 @@ import Helmet from 'react-helmet';
 import { Redirect, Link } from 'react-router-dom';
 import { URL } from "../components/config";
 import { TableContainer, Table, TableHead, TableRow, TableCell,TableBody, Paper, Button, Breadcrumbs, Typography, CssBaseline, Container } from '@material-ui/core';
+import Modal from '../components/Modal';
 
 const Lobby = () => {
   const [seeks, setSeeks] = useState([]);
   const [login, setLogin] = useState(false);
+  //Modal
+  const [show, setShow] = useState(false);
+  const openModal = () => setShow(true);
+  const closeModal = () => setShow(false);
 
   useEffect(() => {
     axios.get(`${URL}/api/seeks/${localStorage.getItem('userId')}`)
@@ -41,6 +46,7 @@ const Lobby = () => {
   </Link>
   <Typography color="textPrimary">Lobby</Typography>
 </Breadcrumbs><br />
+<Modal closeModal={closeModal} show={show} />
       <TableContainer component={Paper} style={{width:'250px'}}>
       <Table size="small" aria-label="a dense table">
         <TableHead>
@@ -61,6 +67,8 @@ const Lobby = () => {
         </TableBody>
       </Table>
     </TableContainer>
+
+    {!show && <button onClick={openModal}>Play With Friend</button>}
     </Container>
     </>
   );
