@@ -35,3 +35,11 @@ exports.playGameValidationValidation = [
     .isString()
     .withMessage('it must be string'),
 ];
+exports.deleteGameValidation = [
+  check('id')
+    .not()
+    .isEmpty(),
+  check('userId')
+    .not()
+    .isEmpty(),
+];
