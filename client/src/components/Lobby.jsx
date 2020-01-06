@@ -4,7 +4,7 @@ import axios from 'axios';
 import Helmet from 'react-helmet';
 import { Redirect, Link } from 'react-router-dom';
 import { URL } from "../components/config";
-import { TableContainer, Table, TableHead, TableRow, TableCell,TableBody, Paper, Button, Breadcrumbs, Typography, CssBaseline, Container } from '@material-ui/core';
+import { TableContainer, Table, TableHead, TableRow, TableCell,TableBody, Paper, Button, Breadcrumbs, Typography, CssBaseline, Container, Grid } from '@material-ui/core';
 import Modal from '../components/Modal';
 
 const Lobby = () => {
@@ -39,6 +39,7 @@ const Lobby = () => {
   return (
     <>
       <Helmet><title>Lobby</title></Helmet>
+      
       <Container>
       <Breadcrumbs aria-label="breadcrumb">
   <Link color="inherit" href="/" onClick={handleLogout}>
@@ -47,7 +48,10 @@ const Lobby = () => {
   <Typography color="textPrimary">Lobby</Typography>
 </Breadcrumbs><br />
 <Modal closeModal={closeModal} show={show} />
-      <TableContainer component={Paper} style={{width:'250px'}}>
+<Grid container spacing={3}>
+
+<Grid item xs={6}>
+      <TableContainer component={Paper} style={{width:'300px', height: '550px'}}>
       <Table size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
@@ -61,14 +65,18 @@ const Lobby = () => {
               <TableCell component="th" scope="seek">
                 {seek.playerOne}
               </TableCell>
-              <TableCell align="right"><Link to={`/game/${seek._id}`} style={{ textDecoration: 'none' }}><Button type="submit" variant="contained" color="primary" size="small">Play</Button></Link></TableCell>
+              <TableCell align="right"><Link to={`/game/${seek._id}`} style={{ textDecoration: 'none' }}><Button type="submit" variant="contained" color="primary" size="small">PLAY</Button></Link></TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
-
-    {!show && <button onClick={openModal}>Play With Friend</button>}
+    </Grid>
+    <Grid item xs={6}>
+      <div><button><Link to={`/`}>CREATE A PLAYER</Link></button></div>
+     <div>{!show && <button onClick={openModal}>PLAY WITH FRIEND</button>}</div>
+     </Grid>
+     </Grid>
     </Container>
     </>
   );

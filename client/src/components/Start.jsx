@@ -110,7 +110,7 @@ const Login = () => {
             </Typography>
             <FormControlLabel
               control={<Checkbox color="primary" />}
-              label="Add player"
+              label="CREATE A PLAYER"
               checked={isChecked}
           onChange={toggleChange}
             />
@@ -148,7 +148,7 @@ const Login = () => {
           </Typography>
        <FormControlLabel
               control={<Checkbox color="primary" />}
-              label="Add player"
+              label="CREATE A PLAYER"
               checked={isChecked}
           onChange={toggleChange}
             />

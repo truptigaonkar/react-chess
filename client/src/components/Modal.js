@@ -48,7 +48,7 @@ function Modal(props) {
                 value={username}
                 onChange={handleUsername}
               >
-                <option value="select">Select</option>
+                <option value="select">Select playerOne</option>
                 {
                   seeks.map((seek) => (
                   <>
