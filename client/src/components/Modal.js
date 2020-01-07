@@ -7,6 +7,7 @@ function Modal(props) {
   const [friendname, setFriendname] = useState([]);
   const [username, setUsername] = useState([]); 
   const [seeks, setSeeks] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleFriendname = (e) => {
     setFriendname(e.target.value);
@@ -34,6 +35,8 @@ function Modal(props) {
       })
       .catch((error) => {
         console.log(error.response.data);
+        setErrorMessage('Please fill all inputs and friendname should be 5 letter long');
+        setTimeout(() => { setErrorMessage(''); }, 2000); // message will disappear after 2000sec.
       });
   }
 
@@ -42,13 +45,14 @@ function Modal(props) {
       <div className={show ? "modal" : "hide"}>
         <button className="button-closeModal" onClick={closeModal}>X</button>
         <h3>Play with friend</h3>
+        <p style={{ color: 'red' }}>{errorMessage}</p>
         <form onSubmit={handleAddFriend}>
           {/* <input type="text" name="username" placeholder="username" onChange={handleUsername} value={username} /> */}
           <select 
                 value={username}
                 onChange={handleUsername}
               >
-                <option value="select">Select playerOne</option>
+                <option value="select">Select player</option>
                 {
                   seeks.map((seek) => (
                   <>
@@ -61,9 +65,9 @@ function Modal(props) {
                   </>
 ))
               }
-              </select>
+              </select> AGAINST 
           <input type="text" name="friendname" placeholder="friendname" onChange={handleFriendname} value={friendname} />
-          <button type="submit">Add Friend</button>
+          <button type="submit">Submit</button>
         </form>
       </div>
     </>
