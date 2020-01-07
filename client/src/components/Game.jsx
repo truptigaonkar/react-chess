@@ -56,7 +56,7 @@ function Game(props) {
       if (err) {
         return console.log(err);
       }
-      if (data.playerOne, data.friendId) {
+      if (data.playerOne && data.friendId) {
         updatePlayerOne(data.playerOne);
         updatePlayerTwo(data.friendId);
 
@@ -65,7 +65,7 @@ function Game(props) {
           let history = data.history;
           let historyWithNumbers = [];
           console.log('history: ', history);
-          let firstMove = `1.${history[0]}`;
+          //let firstMove = `1.${history[0]}`;
           let moveString = '';
 
           //Create new game
@@ -110,7 +110,7 @@ function Game(props) {
         }
       }
     });
-  }, []);
+  }, [id]);
 
   //Check for fen updates every second
   useEffect(() => {
@@ -365,8 +365,6 @@ function Game(props) {
 
 function HistoryTable(props) {
   let moves = props.moveHistory;
-  let whitePlayer = true;
-
   let tableRows = [];
   let round = 1;
   let whiteMove = '';
