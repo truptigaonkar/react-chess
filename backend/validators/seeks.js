@@ -1,5 +1,13 @@
-const { check } = require('express-validator');
+const { check, param } = require('express-validator');
 
+exports.validateGetSeeksReq = [
+  param('userId')
+    .not()
+    .isEmpty()
+    .withMessage('user id is required')
+    .isString()
+    .withMessage('userId must be a string string'),
+];
 exports.newMatchesValidation = [
   check('userId')
     .not()
