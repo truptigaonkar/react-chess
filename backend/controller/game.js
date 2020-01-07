@@ -34,6 +34,9 @@ exports.gameMove = (req, res) => {
     if (!game) {
       return res.json({ err: 'no game with this id ' });
     }
+    if (typeof gameStyle !== 'object') {
+      return res.json({ err: 'gameStyle must be an object' });
+    }
     game.history = gameHistory;
     game.fen = gameFen;
     game.squareStyles = gameStyle;

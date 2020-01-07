@@ -20,7 +20,7 @@ describe('GET /seeks', () => {
     const response = await request(url)
       .get('/seeks')
       .expect('Content-Type', /json/);
-    expect(response.statusCode).toEqual(404);
+    expect(response.statusCode).toEqual(422);
   });
 });
 
@@ -40,8 +40,8 @@ describe('POST /seeks', () => {
 
   it('fails without userId', async () => {
     const response = await request(url)
-      .post('/seeks');
-      // .expect('Content-Type', /json/);
+      .post('/seeks')
+      .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
     expect(response.body.err).toEqual('userId is required');
   });
@@ -123,9 +123,9 @@ describe('GET /withFriendRequests', () => {
 
   it('fails without userId', async () => {
     const response = await request(url)
-      .get('/withFriendRequests');
-      // .expect('Content-Type', /json/);
-    expect(response.statusCode).toEqual(404);
+      .get('/withFriendRequests')
+      .expect('Content-Type', /json/);
+    expect(response.statusCode).toEqual(422);
   });
 });
 
@@ -140,25 +140,8 @@ describe('GET /allUserGames', () => {
 
   it('fails without userId', async () => {
     const response = await request(url)
-      .get('/allUserGames');
-      // .expect('Content-Type', /json/);
-    expect(response.statusCode).toEqual(404);
-  });
-});
-
-describe('GET /game', () => {
-  it('succeeds with /game/_id', async () => {
-    const response = await request(url)
-      .get(`/game/${gameId}`)
+      .get('/allUserGames')
       .expect('Content-Type', /json/);
-    expect(response.statusCode).toEqual(200);
-    expect(typeof response.body).toBe('object');
-  });
-
-  it('fails without _id', async () => {
-    const response = await request(url)
-      .get('/games')
-      .expect('Content-Type', /json/);
-    expect(response.statusCode).toEqual(404);
+    expect(response.statusCode).toEqual(422);
   });
 });

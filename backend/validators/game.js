@@ -1,6 +1,14 @@
-const { check } = require('express-validator');
-// id, gameHistory, gameFen, gameStyle,
-exports.gameMoveValidationValidation = [
+const { check, param } = require('express-validator');
+
+exports.validateGetGamesReq = [
+  param('_id')
+    .not()
+    .isEmpty()
+    .withMessage('_id is required')
+    .isString()
+    .withMessage('_Id must be a string'),
+];
+exports.gameMoveValidation = [
   check('id')
     .not()
     .isEmpty()
@@ -19,9 +27,9 @@ exports.gameMoveValidationValidation = [
   check('gameStyle')
     .not()
     .isEmpty()
-    .withMessage('gameStyle is required'),
+    .withMessage('gameStyle is required')
 ];
-exports.playGameValidationValidation = [
+exports.playGameValidation = [
   check('id')
     .not()
     .isEmpty()
@@ -33,7 +41,7 @@ exports.playGameValidationValidation = [
     .isEmpty()
     .withMessage('playerTwo is required')
     .isString()
-    .withMessage('it must be string'),
+    .withMessage('playerTwo must be string'),
 ];
 exports.deleteGameValidation = [
   check('id')
