@@ -7,7 +7,7 @@ const { runValidation } = require('../validators');
 
 const router = express.Router();
 
-router.get('/seeks/:userId', allMatches);
+router.get('/seeks/:userId?', allMatches);
 router.post('/seeks', newMatchesValidation, runValidation, newMatches);
 router.post('/withFriend', playWithFriendValidation, runValidation, playWithFriend);
 router.get('/withFriendRequests/:userId', playWithFriendRequests);

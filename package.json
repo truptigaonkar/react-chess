@@ -20,7 +20,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test-backend": "jest /backend/tests/backend.test.js",
+    "backend-test": "jest /backend/tests/backend.test.js",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js --ext .jsx .",
     "server": "node ./backend/server.js"

@@ -7,20 +7,19 @@ const validFriend = 'testFriend';
 const gameId = '5e04ad71e8296713c02b218f';
 
 
-
 describe('GET /seeks', () => {
   it('succeeds with /seeks/userId', async () => {
     const response = await request(url)
       .get(`/seeks/${testId}`)
-      .expect('Content-Type', 'application/json; charset=utf-8');
+      .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
     expect(typeof response.body).toBe('object');
   });
 
   it('fails without userId', async () => {
     const response = await request(url)
-      .get('/seeks');
-      // .expect('Content-Type', /json/);
+      .get('/seeks')
+      .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(404);
   });
 });
@@ -41,8 +40,8 @@ describe('POST /seeks', () => {
 
   it('fails without userId', async () => {
     const response = await request(url)
-      .post('/seeks')
-      .expect('Content-Type', /json/);
+      .post('/seeks');
+      // .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
     expect(response.body.err).toEqual('userId is required');
   });
@@ -158,8 +157,8 @@ describe('GET /game', () => {
 
   it('fails without _id', async () => {
     const response = await request(url)
-      .get('/seeks');
-      // .expect('Content-Type', /json/);
+      .get('/games')
+      .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(404);
   });
 });
