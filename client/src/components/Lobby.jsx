@@ -96,9 +96,7 @@ const Lobby = () => {
   color="primary"
   aria-label="vertical outlined primary button group"
 >
-<Button><Link to={`/`} style={{ textDecoration: 'none' }}>CREATE A PLAYER</Link></Button>
   {!show && <Button onClick={openModal}>PLAY WITH FRIEND</Button>}
-  <Button>PLAY WITH COMPUTER</Button>
 </ButtonGroup>
 
 <Modal closeModal={closeModal} show={show} />
