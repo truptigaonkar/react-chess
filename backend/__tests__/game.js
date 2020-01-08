@@ -1,4 +1,7 @@
 const request = require('supertest');
+//const Chess = require('./chess').Chess;
+import Chess from 'chess.js';
+const chess = new Chess();
 
 const url = 'http://localhost:8000/api';
 const testId = 'testUser';
@@ -6,6 +9,13 @@ const shortId = 'boo';
 const validFriend = 'testFriend';
 const gameId = '5e04ad71e8296713c02b218f';
 
+
+while (!chess.game_over()) {
+  var moves = chess.moves();
+  var move = moves[Math.floor(Math.random() * moves.length)];
+  chess.move(move);
+}
+const testFen = chess.fen();
 
 describe('GET /game', () => {
   it('succeeds with /game/_id', async () => {
@@ -29,7 +39,7 @@ describe('POST /game/move', () => {
     const response = await request(url)
       .post('/game/move')
       .send({
-        id: gameId, gameHistory: [], gameFen: 'a1', gameStyle: {}
+        id: gameId, gameHistory: [], gameFen: testFen, gameStyle: {}
       })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
@@ -37,7 +47,7 @@ describe('POST /game/move', () => {
     expect(response.body).toHaveProperty('fen');
     expect(response.body).toHaveProperty('history');
     expect(response.body).toHaveProperty('squareStyles');
-    expect(response.body.fen).toEqual('a1');
+    expect(response.body.fen).toEqual(testFen);
   });
  
   it('fails without userId', async () => {
