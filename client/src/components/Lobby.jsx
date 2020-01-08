@@ -4,8 +4,9 @@ import axios from 'axios';
 import Helmet from 'react-helmet';
 import { Redirect, Link } from 'react-router-dom';
 import { URL } from "../components/config";
-import { TableContainer, Table, TableHead, TableRow, TableCell,TableBody, Paper, Button, Breadcrumbs, Typography, CssBaseline, Container, Grid } from '@material-ui/core';
+import { TableContainer, Table, TableHead, TableRow, TableCell,TableBody, Paper, Button, Breadcrumbs, Typography, CssBaseline, Container, Grid, ButtonGroup,  } from '@material-ui/core';
 import Modal from '../components/Modal';
+import { makeStyles } from '@material-ui/core/styles';
 
 const Lobby = () => {
   const [seeks, setSeeks] = useState([]);
@@ -14,6 +15,20 @@ const Lobby = () => {
   const [show, setShow] = useState(false);
   const openModal = () => setShow(true);
   const closeModal = () => setShow(false);
+
+
+  const useStyles = makeStyles(theme => ({
+    root: {
+      flexGrow: 1,
+    },
+    paper: {
+      padding: theme.spacing(2),
+      textAlign: 'center',
+      color: theme.palette.text.secondary,
+    },
+  }));
+  const classes = useStyles();
+  
 
   useEffect(() => {
     axios.get(`${URL}/api/seeks/${localStorage.getItem('userId')}`)
@@ -36,8 +51,9 @@ const Lobby = () => {
       <Redirect to="/" />
     );
   }
+  
   return (
-    <>
+    <div className={classes.root}>
       <Helmet><title>Lobby</title></Helmet>
       
       <Container>
@@ -47,11 +63,11 @@ const Lobby = () => {
   </Link>
   <Typography color="textPrimary">Lobby</Typography>
 </Breadcrumbs><br />
-<Modal closeModal={closeModal} show={show} />
-<Grid container spacing={3}>
 
-<Grid item xs={6}>
-      <TableContainer component={Paper} style={{width:'300px', height: '550px'}}>
+<Grid container spacing={3}>
+<Grid item xs={12} sm={6}>
+<paper className={classes.paper}>
+      <TableContainer component={Paper} style={{ height: '550px'}}>
       <Table size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
@@ -71,14 +87,26 @@ const Lobby = () => {
         </TableBody>
       </Table>
     </TableContainer>
+    </paper>
     </Grid>
-    <Grid item xs={6}>
-      <div><button><Link to={`/`}>CREATE A PLAYER</Link></button></div>
-     <div>{!show && <button onClick={openModal}>PLAY WITH FRIEND</button>}</div>
+    <Grid item xs={12} sm={6}>
+      <paper className={classes.paper}>
+      <ButtonGroup
+  orientation="vertical"
+  color="primary"
+  aria-label="vertical outlined primary button group"
+>
+<Button><Link to={`/`} style={{ textDecoration: 'none' }}>CREATE A PLAYER</Link></Button>
+  {!show && <Button onClick={openModal}>PLAY WITH FRIEND</Button>}
+  <Button>PLAY WITH COMPUTER</Button>
+</ButtonGroup>
+
+<Modal closeModal={closeModal} show={show} />
+     </paper>
      </Grid>
      </Grid>
     </Container>
-    </>
+    </div>
   );
 };
 
