@@ -1,5 +1,15 @@
 const { check, param } = require('express-validator');
 
+exports.newUserValidation = [
+  check('userId')
+    .not()
+    .isEmpty()
+    .withMessage('user id is required')
+    .isString()
+    .withMessage('is string')
+    .isLength({ min: 5 })
+    .withMessage('must be at least 5 letters long'),
+];
 exports.validateGetSeeksReq = [
   param('userId')
     .not()

@@ -13,12 +13,17 @@ exports.allMatches = (req, res) => {
     return res.json(games);
   });
 };
-exports.newMatches = (req, res) => {
+exports.newUser = (req, res) => {
   const { userId } = req.body;
   Seek.findOne({ userId }).exec((err, seeker) => {
     if (err) {
       return res.status(400).json({
         err: errorHandler(err),
+      });
+    }
+    if (seeker) {
+      return res.status(400).json({
+        err: 'there is a user with this id',
       });
     }
     if (!seeker) {
@@ -32,27 +37,48 @@ exports.newMatches = (req, res) => {
         return res.json(resSeeker);
       });
     }
-    const game = new Game({ playerOne: userId, startedBy: userId });
-    game.save((err, newGame) => {
-      if (err) {
-        return res.status(400).json({
-          err: errorHandler(err),
-        });
-      }
-      return res.json(newGame);
-    });
   });
 };
-exports.playWithFriend = (req, res) => {
-  const { friendId, userId } = req.body;
-  const game = new Game({ playerOne: userId, friendId, withFriend: true });
-  game.save((err, newGame) => {
+exports.newMatches = (req, res) => {
+  const { userId } = req.body;
+  Seek.findOne({ userId }).exec((err, seeker) => {
     if (err) {
       return res.status(400).json({
         err: errorHandler(err),
       });
     }
-    return res.json(newGame);
+    if (seeker) {
+      const game = new Game({ playerOne: userId, startedBy: userId });
+      game.save((error, newGame) => {
+        if (err) {
+          return res.status(400).json({
+            err: errorHandler(error),
+          });
+        }
+        return res.json(newGame);
+      });
+    }
+  });
+};
+exports.playWithFriend = (req, res) => {
+  const { friendId, userId } = req.body;
+  Seek.findOne({ userId: friendId }).exec((err, friend) => {
+    if (!friend) {
+      return res.status(400).json({
+        err: 'there is no user with this id',
+      });
+    }
+    if (friend) {
+      const game = new Game({ playerOne: userId, friendId, withFriend: true });
+      game.save((error, newGame) => {
+        if (err) {
+          return res.status(400).json({
+            err: errorHandler(error),
+          });
+        }
+        return res.json(newGame);
+      });
+    }
   });
 };
 exports.playWithFriendRequests = (req, res) => {
