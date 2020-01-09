@@ -11,7 +11,8 @@ const router = express.Router();
 
 
 router.get('/game/:_id?', validateGetGamesReq, runValidation, matchData);
-router.post('/game/move', gameMoveValidation, runValidation, gameMove);
+//router.post('/game/move', gameMoveValidation, runValidation, gameMove);
+router.post('/game/move', gameMove);
 router.post('/game/play', playGameValidation, runValidation, playGame);
 router.post('/game/deleteUnActiveGame', deleteGameValidation, runValidation, deleteGame);
 
