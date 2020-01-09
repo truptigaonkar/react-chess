@@ -15,5 +15,5 @@ router.post('/withFriend', playWithFriendValidation, runValidation, playWithFrie
 router.get('/withFriendRequests/:userId?', validateGetSeeksReq, runValidation, playWithFriendRequests);
 router.get('/allUserGames/:userId?', validateGetSeeksReq, runValidation, allUserGames);
 
-
+//test
 module.exports = router;
