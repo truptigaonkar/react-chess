@@ -27,6 +27,10 @@ exports.newMatchesValidation = [
     .withMessage('is string')
     .isLength({ min: 5 })
     .withMessage('must be at least 5 letters long'),
+  check('color')
+    .not()
+    .isEmpty()
+    .withMessage('the color is required')
 ];
 exports.playWithFriendValidation = [
   check('friendId')
