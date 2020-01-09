@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 const TransitionsModal = ({ openNewGameModal, setOpenNewGameModal, userId }) => {
   const classes = useStyles();
   const history = useHistory()
-  const [value, setValue] = useState('white');
+  const [value, setValue] = useState('w');
   const [errorMessage, setErrorMessage] = useState('')
   const handleClose = () => {
     setOpenNewGameModal(false)
@@ -77,8 +77,8 @@ const TransitionsModal = ({ openNewGameModal, setOpenNewGameModal, userId }) => 
             <FormControl component="fieldset" className={classes.formControl}>
               <FormLabel component="legend">Chose your color</FormLabel>
               <RadioGroup aria-label="gender" name="gender1" value={value} onChange={handleChange}>
-                <FormControlLabel value="white" control={<Radio />} label="White" />
-                <FormControlLabel value="black" control={<Radio />} label="Black" />
+                <FormControlLabel value="w" control={<Radio />} label="White" />
+                <FormControlLabel value="b" control={<Radio />} label="Black" />
               </RadioGroup>
             </FormControl>
             <Button variant="contained" onClick={createGame}>Start</Button>
