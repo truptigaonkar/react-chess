@@ -4,8 +4,15 @@ const url = 'http://localhost:8000/api';
 const testId = 'testUser';
 const shortId = 'boo';
 const validFriend = 'testFriend';
-const gameId = '5e04ad71e8296713c02b218f';
+let gameId;
+let gameWithFriendId;
 
+afterAll(async () => {
+  await request(url)
+  .post('/game/deleteUnActiveGame')
+  .send({ id: gameId, userId: testId })
+  .send({ id: gameWithFriendId, userId: testId })
+}); 
 
 describe('GET /seeks', () => {
   it('succeeds with /seeks/userId', async () => {
@@ -36,6 +43,8 @@ describe('POST /seeks', () => {
     expect(response.body).toHaveProperty('playerOne');
     expect(response.body.finished).toEqual(false);
     expect(response.body.startedBy).toEqual(testId);
+
+    gameId = response.body._id;
   });
 
   it('fails without userId', async () => {
@@ -69,6 +78,8 @@ describe('POST /withFriend', () => {
     expect(response.body).toHaveProperty('friendId');
     expect(response.body.withFriend).toEqual(true);
     expect(response.body.friendId).toEqual(validFriend);
+
+    gameWithFriendId = response.body._id;
   });
 
   it('fails without userId', async () => {

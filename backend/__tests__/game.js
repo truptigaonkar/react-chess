@@ -1,21 +1,34 @@
 const request = require('supertest');
-//const Chess = require('./chess').Chess;
-import Chess from 'chess.js';
+const Chess = require('chess.js').Chess;
 const chess = new Chess();
 
 const url = 'http://localhost:8000/api';
 const testId = 'testUser';
 const shortId = 'boo';
 const validFriend = 'testFriend';
-const gameId = '5e04ad71e8296713c02b218f';
-
+let gameId;
 
 while (!chess.game_over()) {
   var moves = chess.moves();
   var move = moves[Math.floor(Math.random() * moves.length)];
   chess.move(move);
 }
+
 const testFen = chess.fen();
+
+beforeAll(async () => {
+  const response = await request(url)
+    .post('/seeks')
+    .send({ userId: testId });
+  
+  gameId = response.body._id;
+});
+
+afterAll(async () => {
+  await request(url)
+  .post('/game/deleteUnActiveGame')
+  .send({ id: gameId, userId: testId })
+});
 
 describe('GET /game', () => {
   it('succeeds with /game/_id', async () => {
