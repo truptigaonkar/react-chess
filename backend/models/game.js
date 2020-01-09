@@ -18,6 +18,10 @@ const gameSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  started: {
+    type: Boolean,
+    default: false,
+  },
   friendId: {
     type: String,
     default: '',
@@ -42,6 +46,14 @@ const gameSchema = new mongoose.Schema({
   },
   squareStyles: {
     type: mongoose.Schema.Types.Mixed,
+  },
+  w: {
+    type: String,
+    default: '',
+  },
+  b: {
+    type: String,
+    default: '',
   },
 });
 
