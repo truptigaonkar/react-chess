@@ -40,24 +40,32 @@ exports.newUser = (req, res) => {
   });
 };
 exports.newMatches = (req, res) => {
-  const { userId } = req.body;
+  const { userId, color } = req.body;
   Seek.findOne({ userId }).exec((err, seeker) => {
     if (err) {
       return res.status(400).json({
         err: errorHandler(err),
       });
     }
-    if (seeker) {
-      const game = new Game({ playerOne: userId, startedBy: userId });
-      game.save((error, newGame) => {
-        if (err) {
+    if (!seeker) {
+      const newSeeker = new Seek({ userId });
+      return newSeeker.save((newErr, resSeeker) => {
+        if (newErr) {
           return res.status(400).json({
-            err: errorHandler(error),
+            err: errorHandler(newErr),
           });
         }
-        return res.json(newGame);
       });
     }
+    const game = new Game({ playerOne: userId, startedBy: userId, [color]: userId });
+    game.save((newErr, newGame) => {
+      if (err) {
+        return res.status(400).json({
+          err: errorHandler(newErr),
+        });
+      }
+      return res.json(newGame);
+    });
   });
 };
 exports.playWithFriend = (req, res) => {
