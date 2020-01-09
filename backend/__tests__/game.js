@@ -1,4 +1,6 @@
 const request = require('supertest');
+const mongoose = require('mongoose');
+const GameModel
 const Chess = require('chess.js').Chess;
 const chess = new Chess();
 
@@ -26,8 +28,8 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await request(url)
-  .post('/game/deleteUnActiveGame')
-  .send({ id: gameId, userId: testId })
+    .post('/game/deleteUnActiveGame')
+    .send({ id: gameId, userId: testId })
 });
 
 describe('GET /game', () => {
