@@ -46,7 +46,7 @@ const TransitionsModal = ({ openNewGameModal, setOpenNewGameModal, userId }) => 
     setValue(event.target.value);
   };
   const createGame = () => {
-    axios.post('http://localhost:8000/api/seeks/', { userId }).then((res) => {
+    axios.post('http://localhost:8000/api/seeks/', { userId, color: value }).then((res) => {
       if (res.data.err) {
         setErrorMessage(res.data.err)
       } else {
