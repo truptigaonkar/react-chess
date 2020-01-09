@@ -300,14 +300,18 @@ const Game = () => {
             setErrorMessage(error.response.data.err)
           }
         })
-    }, 1000)
+    }, 5000)
     return () => clearTimeout(timer);
   }, []);
   console.log(gameData)
   return (
     <div>
       <div style={boardsContainer}>
-        <WithMoveValidation game={chess} fen={fen} id={id} />
+        <h2>player one : {gameData.playerOne}</h2>
+        {gameData.playerOne && gameData.playerTwo ?
+          <WithMoveValidation game={chess} fen={fen} id={id} />
+          :
+          <p>still waiting another player to join the game</p>}
       </div>
     </div>
   );
