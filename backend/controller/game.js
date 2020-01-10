@@ -11,16 +11,22 @@ exports.matchData = (req, res) => {
   });
 };
 exports.playGame = (req, res) => {
-  const { _id, playerTwo } = req.body;
-  Game.findOne({ _id }).exec((err, game) => {
+  const { id, playerTwo } = req.body;
+  Game.findOne({ _id: id }).exec((err, game) => {
     if (err) {
       return res.json({ err: errorHandler(err) });
     }
     if (!game) {
       return res.json({ err: 'no game with this id ' });
     }
+    if (game.w) {
+      game.b = playerTwo
+    } else {
+      game.w = playerTwo
+    }
+    game.started = true;
     game.playerTwo = playerTwo;
-    return res.json(game);
+    game.save()
   });
 };
 exports.gameMove = (req, res) => {
