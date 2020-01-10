@@ -19,8 +19,14 @@ exports.playGame = (req, res) => {
     if (!game) {
       return res.json({ err: 'no game with this id ' });
     }
+    if (game.w) {
+      game.b = playerTwo
+    } else {
+      game.w = playerTwo
+    }
+    game.started = true;
     game.playerTwo = playerTwo;
-    return res.json(game);
+    game.save()
   });
 };
 exports.gameMove = (req, res) => {
