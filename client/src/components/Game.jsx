@@ -1,58 +1,9 @@
-// import React, { useEffect, useState } from 'react';
-// import Helmet from 'react-helmet';
-// import Chessboard from 'chessboardjsx';
-// import axios from 'axios';
-// import { Link, useParams } from 'react-router-dom';
-// import { URL } from "../components/config";
-
-// function Game(props) {
-//   let [fen, setFen] = useState('start');
-//   let { id } = useParams();
-//   const [gameData, setGameData] = useState({})
-//   const [errorMessage, setErrorMessage] = useState('')
-
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       axios.get(`${URL}/api/game/${id}`)
-//         .then((res) => {
-//           if (res.data.err) {
-//             setErrorMessage(res.data.err)
-//           } else {
-//             setGameData(res.data)
-//             setFen(res.data.fen ? res.data.fen : 'start')
-//           }
-//         }).catch(error => {
-//           console.log(error.response)
-//           if (error.response) {
-//             setErrorMessage(error.response.data.err)
-//           }
-//         })
-//     }, 5000)
-//     return () => clearTimeout(timer);
-//   }, []);
-
-//   console.log(gameData)
-//   return (
-//     <div className="App">
-//       <Helmet><title>Game</title></Helmet>
-//       <Link to='/lobby' className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
-//       <p style={{ color: 'red' }}>{errorMessage}</p>
-//       <Chessboard
-//         position={fen}
-//       />
-//     </div>
-//   );
-// }
-
-// export default Game;
-
-
 import React, { useEffect, useState } from 'react';
 import Chess from 'chess.js';
 import Chessboard from 'chessboardjsx';
 import { URL } from "../components/config";
 import {
-  useParams, useHistory,
+  useParams,
 } from 'react-router-dom';
 import axios from 'axios';
 
@@ -74,7 +25,7 @@ const squareStyling = ({ pieceSquare, history }) => {
     }),
   };
 };
-const HumanVsHuman = ({ children, id, fen }) => {
+const HumanVsHuman = ({ children, id, fen, gameData }) => {
   const [state, setState] = useState({
     game: '',
     fen: 'start',
@@ -89,12 +40,12 @@ const HumanVsHuman = ({ children, id, fen }) => {
     // array of past game moves
     history: [],
   });
-  console.log('from humanVsHuman', id)
   useEffect(() => {
-    const chess = new Chess();
-    chess.header('w', 'Morphy', 'b', 'basel');
+    const chess = new Chess()
+    chess.load(gameData.fen);
+    chess.header('w', gameData.w, 'b', gameData.b);
     setState({ ...state, game: chess });
-  }, []);
+  }, [gameData.fen]);
   const {
     dropSquareStyle, squareStyles, history, pieceSquare, game,
   } = state;
@@ -109,53 +60,67 @@ const HumanVsHuman = ({ children, id, fen }) => {
 
   // show possible moves
   const highlightSquare = (sourceSquare, squaresToHighlight) => {
-    const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
-      (a, c) => ({
-        ...a,
-        ...{
-          [c]: {
-            background:
-              'radial-gradient(circle, #fffc00 36%, transparent 40%)',
-            borderRadius: '50%',
+    if (gameData[game.turn()] === localStorage.getItem('userId')) {
+      const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
+        (a, c) => ({
+          ...a,
+          ...{
+            [c]: {
+              background:
+                'radial-gradient(circle, #fffc00 36%, transparent 40%)',
+              borderRadius: '50%',
+            },
           },
-        },
-        ...squareStyling({
-          history,
-          pieceSquare,
+          ...squareStyling({
+            history,
+            pieceSquare,
+          }),
         }),
-      }),
-      {},
-    );
+        {},
+      );
 
-    setState({
-      ...state,
-      squareStyles: { ...squareStyles, ...highlightStyles },
-    });
+      setState({
+        ...state,
+        squareStyles: { ...squareStyles, ...highlightStyles },
+      });
+    }
   };
 
   const onDrop = ({ sourceSquare, targetSquare }) => {
     // see if the move is legal
-    const move = game.move({
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: 'q', // always promote to a queen for example simplicity
-    });
+    if (gameData[game.turn()] === localStorage.getItem('userId')) {
 
-    // illegal move
-    if (move === null) return;
-    console.log(game.header().w);
-    axios.post('http://localhost:8000/api/game/move', { gameFen: game.fen(), id }).then(res => console.log(res)).catch(error => {
-      console.log(error.response)
-      if (error.response) {
-        console.log(error.response.data.err)
-      }
-    })
-    setState({
-      ...state,
-      fen: game.fen(),
-      history: game.history({ verbose: true }),
-      squareStyles: squareStyling({ pieceSquare, history }),
-    });
+      const move = game.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: 'q', // always promote to a queen for example simplicity
+      });
+      // illegal move
+      if (move === null) return;
+      console.log(game.turn())
+      //console.log(game.header().w);
+      axios.post('http://localhost:8000/api/game/move', { gameFen: game.fen(), id }).then(res => {
+        if (res.data.err) {
+          return console.log(res.data.err)
+        } else {
+          setState({
+            ...state,
+            fen: game.fen(),
+            history: game.history({ verbose: true }),
+            squareStyles: squareStyling({ pieceSquare, history }),
+          });
+        }
+        console.log(res)
+      }).catch(error => {
+        console.log(error.response)
+        if (error.response) {
+          console.log(error.response.data.err)
+        }
+      })
+
+    }
+
+
   };
 
   const onMouseOverSquare = (square) => {
@@ -232,9 +197,9 @@ const HumanVsHuman = ({ children, id, fen }) => {
   });
 };
 
-const WithMoveValidation = ({ fen, id }) => (
+const WithMoveValidation = ({ fen, id, gameData }) => (
   <div>
-    <HumanVsHuman id={id} fen={fen}>
+    <HumanVsHuman id={id} fen={fen} gameData={gameData}>
       {({
         position,
         fen,
@@ -283,6 +248,7 @@ const Game = () => {
   let { id } = useParams();
   const [gameData, setGameData] = useState({})
   const [errorMessage, setErrorMessage] = useState('')
+  const [userId] = useState(localStorage.getItem('userId'))
   const chess = new Chess();
   useEffect(() => {
     const timer = setInterval(() => {
@@ -291,7 +257,7 @@ const Game = () => {
           if (res.data.err) {
             setErrorMessage(res.data.err)
           } else {
-            setGameData(res.data)
+            setGameData({ ...res.data })
             setFen(res.data.fen ? res.data.fen : 'start')
           }
         }).catch(error => {
@@ -300,16 +266,22 @@ const Game = () => {
             setErrorMessage(error.response.data.err)
           }
         })
-    }, 5000)
+    }, 1000)
     return () => clearTimeout(timer);
   }, []);
   console.log(gameData)
+  useEffect(() => {
+    if (!gameData.started && gameData.playerOne && userId !== gameData.playerOne) {
+      axios.post('http://localhost:8000/api/game/play', { id, playerTwo: userId }).then(res => console.log(res))
+    }
+  }, [gameData])
   return (
     <div>
       <div style={boardsContainer}>
         <h2>player one : {gameData.playerOne}</h2>
-        {gameData.playerOne && gameData.playerTwo ?
-          <WithMoveValidation game={chess} fen={fen} id={id} />
+        <h2>player two : {gameData.playerTwo}</h2>
+        {gameData.started ?
+          <WithMoveValidation game={chess} fen={fen} id={id} gameData={gameData} />
           :
           <p>still waiting another player to join the game</p>}
       </div>
