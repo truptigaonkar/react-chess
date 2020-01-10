@@ -269,6 +269,7 @@ const Game = () => {
     }, 1000)
     return () => clearTimeout(timer);
   }, []);
+  console.log(gameData)
   useEffect(() => {
     if (!gameData.started && gameData.playerOne && userId !== gameData.playerOne) {
       axios.post('http://localhost:8000/api/game/play', { id, playerTwo: userId }).then(res => console.log(res))
