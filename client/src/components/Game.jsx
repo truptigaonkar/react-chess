@@ -1,52 +1,3 @@
-// import React, { useEffect, useState } from 'react';
-// import Helmet from 'react-helmet';
-// import Chessboard from 'chessboardjsx';
-// import axios from 'axios';
-// import { Link, useParams } from 'react-router-dom';
-// import { URL } from "../components/config";
-
-// function Game(props) {
-//   let [fen, setFen] = useState('start');
-//   let { id } = useParams();
-//   const [gameData, setGameData] = useState({})
-//   const [errorMessage, setErrorMessage] = useState('')
-
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       axios.get(`${URL}/api/game/${id}`)
-//         .then((res) => {
-//           if (res.data.err) {
-//             setErrorMessage(res.data.err)
-//           } else {
-//             setGameData(res.data)
-//             setFen(res.data.fen ? res.data.fen : 'start')
-//           }
-//         }).catch(error => {
-//           console.log(error.response)
-//           if (error.response) {
-//             setErrorMessage(error.response.data.err)
-//           }
-//         })
-//     }, 5000)
-//     return () => clearTimeout(timer);
-//   }, []);
-
-//   console.log(gameData)
-//   return (
-//     <div className="App">
-//       <Helmet><title>Game</title></Helmet>
-//       <Link to='/lobby' className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
-//       <p style={{ color: 'red' }}>{errorMessage}</p>
-//       <Chessboard
-//         position={fen}
-//       />
-//     </div>
-//   );
-// }
-
-// export default Game;
-
-
 import React, { useEffect, useState } from 'react';
 import Chess from 'chess.js';
 import Chessboard from 'chessboardjsx';
@@ -109,33 +60,34 @@ const HumanVsHuman = ({ children, id, fen, gameData }) => {
 
   // show possible moves
   const highlightSquare = (sourceSquare, squaresToHighlight) => {
-    const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
-      (a, c) => ({
-        ...a,
-        ...{
-          [c]: {
-            background:
-              'radial-gradient(circle, #fffc00 36%, transparent 40%)',
-            borderRadius: '50%',
+    if (gameData[game.turn()] === localStorage.getItem('userId')) {
+      const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
+        (a, c) => ({
+          ...a,
+          ...{
+            [c]: {
+              background:
+                'radial-gradient(circle, #fffc00 36%, transparent 40%)',
+              borderRadius: '50%',
+            },
           },
-        },
-        ...squareStyling({
-          history,
-          pieceSquare,
+          ...squareStyling({
+            history,
+            pieceSquare,
+          }),
         }),
-      }),
-      {},
-    );
+        {},
+      );
 
-    setState({
-      ...state,
-      squareStyles: { ...squareStyles, ...highlightStyles },
-    });
+      setState({
+        ...state,
+        squareStyles: { ...squareStyles, ...highlightStyles },
+      });
+    }
   };
 
   const onDrop = ({ sourceSquare, targetSquare }) => {
     // see if the move is legal
-    console.log(gameData[game.turn()] === localStorage.getItem('userId'))
     if (gameData[game.turn()] === localStorage.getItem('userId')) {
 
       const move = game.move({
@@ -314,12 +266,12 @@ const Game = () => {
             setErrorMessage(error.response.data.err)
           }
         })
-    }, 25000)
+    }, 1000)
     return () => clearTimeout(timer);
   }, []);
   useEffect(() => {
     if (!gameData.started && gameData.playerOne && userId !== gameData.playerOne) {
-      axios.post('http://localhost:8000/api/game/play', { _id: id, playerTwo: userId }).then(res => console.log(res))
+      axios.post('http://localhost:8000/api/game/play', { id, playerTwo: userId }).then(res => console.log(res))
     }
   }, [gameData])
   return (
