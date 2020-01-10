@@ -11,8 +11,8 @@ exports.matchData = (req, res) => {
   });
 };
 exports.playGame = (req, res) => {
-  const { id, playerTwo } = req.body;
-  Game.findOne({ _id: id }).exec((err, game) => {
+  const { _id, playerTwo } = req.body;
+  Game.findOne({ _id }).exec((err, game) => {
     if (err) {
       return res.json({ err: errorHandler(err) });
     }
