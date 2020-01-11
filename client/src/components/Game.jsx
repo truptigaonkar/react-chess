@@ -1,320 +1,455 @@
-// import React, { useEffect, useState } from 'react';
-// import Helmet from 'react-helmet';
-// import Chessboard from 'chessboardjsx';
-// import axios from 'axios';
-// import { Link, useParams } from 'react-router-dom';
-// import { URL } from "../components/config";
-
-// function Game(props) {
-//   let [fen, setFen] = useState('start');
-//   let { id } = useParams();
-//   const [gameData, setGameData] = useState({})
-//   const [errorMessage, setErrorMessage] = useState('')
-
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       axios.get(`${URL}/api/game/${id}`)
-//         .then((res) => {
-//           if (res.data.err) {
-//             setErrorMessage(res.data.err)
-//           } else {
-//             setGameData(res.data)
-//             setFen(res.data.fen ? res.data.fen : 'start')
-//           }
-//         }).catch(error => {
-//           console.log(error.response)
-//           if (error.response) {
-//             setErrorMessage(error.response.data.err)
-//           }
-//         })
-//     }, 5000)
-//     return () => clearTimeout(timer);
-//   }, []);
-
-//   console.log(gameData)
-//   return (
-//     <div className="App">
-//       <Helmet><title>Game</title></Helmet>
-//       <Link to='/lobby' className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
-//       <p style={{ color: 'red' }}>{errorMessage}</p>
-//       <Chessboard
-//         position={fen}
-//       />
-//     </div>
-//   );
-// }
-
-// export default Game;
-
-
 import React, { useEffect, useState } from 'react';
+import Helmet from 'react-helmet';
 import Chess from 'chess.js';
 import Chessboard from 'chessboardjsx';
-import { URL } from "../components/config";
-import {
-  useParams, useHistory,
-} from 'react-router-dom';
 import axios from 'axios';
+import { Link, useParams } from 'react-router-dom';
+import { URL } from './config';
 
-const squareStyling = ({ pieceSquare, history }) => {
-  const sourceSquare = history.length && history[history.length - 1].from;
-  const targetSquare = history.length && history[history.length - 1].to;
+function Game() {
+  const { id } = useParams();
+  let newFen = '';
+  let newHistory = [];
+  const [chess, updateChess] = useState(new Chess());
+  const [fen, updateFen] = useState('start');
+  const [moveHistory, updateMoveHistory] = useState([]);
+  const [playerOne, updatePlayerOne] = useState('');
+  const [playerTwo, updatePlayerTwo] = useState('');
+  const [color, updateColor] = useState('');
+  const [turn, updateTurn] = useState('');
+  const [squareStyles, updateSquareStyles] = useState({});
+  const [pieceSquare, updatePieceSquare] = useState('');
+  const [check, updateCheck] = useState(false);
+  const [winner, updateWinner] = useState('');
+  const [draw, updateDraw] = useState(false);
+  const [drawReason, updateDrawReason] = useState('');
 
-  return {
-    [pieceSquare]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' },
-    ...(history.length && {
-      [sourceSquare]: {
-        backgroundColor: 'rgba(255, 255, 0, 0.4)',
-      },
-    }),
-    ...(history.length && {
-      [targetSquare]: {
-        backgroundColor: 'rgba(255, 255, 0, 0.4)',
-      },
-    }),
-  };
-};
-const HumanVsHuman = ({ children, id, fen }) => {
-  const [state, setState] = useState({
-    game: '',
-    fen: 'start',
-    // square styles for active drop square
-    dropSquareStyle: {},
-    // custom square styles
-    squareStyles: {},
-    // square with the currently clicked piece
-    pieceSquare: '',
-    // currently clicked square
-    square: '',
-    // array of past game moves
-    history: [],
-  });
-  console.log('from humanVsHuman', id)
+  function checkForCheck() {
+    if (chess.in_check()) {
+      updateCheck(true);
+    } else {
+      updateCheck(false);
+    }
+  }
+
+  function checkForGameOver() {
+    if (chess.game_over()) {
+      if (chess.in_checkmate()) {
+        // The winner is the last player making a move
+        const playerInTurn = chess.turn();
+        if (playerInTurn === 'w') {
+          updateWinner('black player');
+        } else {
+          updateWinner('white player');
+        }
+      } else if (chess.in_draw()) {
+        updateDraw(true);
+        // Check for draw reasons
+        if (chess.in_stalemate()) {
+          updateDrawReason('stalemate');
+        } else if (chess.insufficient_material()) {
+          updateDrawReason('insufficient material');
+        }
+      }
+    }
+  }
+
+  // Play a random game
+  // useEffect(() => {
+  //   while (!chess.game_over()) {
+  //     var moves = chess.moves();
+  //     var move = moves[Math.floor(Math.random() * moves.length)];
+  //     chess.move(move);
+  //     //Update fen and history
+  //     updateFen(chess.fen());
+  //     updateMoveHistory(chess.history());
+  //     //Check for game over
+  //     checkForCheck();
+  //     checkForGameOver();
+  //   }
+  // }, []);
+
+  // Check if there are two players
+  // If there is a move history, add it to the Chess game
   useEffect(() => {
-    const chess = new Chess();
-    chess.header('w', 'Morphy', 'b', 'basel');
-    setState({ ...state, game: chess });
-  }, []);
-  const {
-    dropSquareStyle, squareStyles, history, pieceSquare, game,
-  } = state;
+    // Fetch user id from local storage
+    const myUserId = window.localStorage.getItem('userId');
+    console.log('myUserId: ', myUserId);
 
-  // keep clicked square style and remove hint squares
-  const removeHighlightSquare = () => {
-    setState({
-      ...state,
-      squareStyles: squareStyling({ pieceSquare, history }),
-    });
+    // GET request
+    axios.get(`${URL}/api/game/${id}`)
+      .then(({ data, err }) => {
+        if (err) {
+          return console.log(err);
+        }
+
+        console.log('Answer from /game/id: ', data);
+
+        // Start game if not started
+        // Player two starts the game when entering game page
+        // *Checking if there is a playerOne that is not me*
+        if(!data.started && data.playerOne && myUserId !== data.playerOne) {
+          axios.post(`${URL}/api/game/play`, {
+            playerTwo: myUserId,
+             id
+          })
+          .then(function (response) {
+            console.log('response from /game/play: ', response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        }
+
+        // Set color
+        if(data.w) {
+          if(data.w === myUserId) {
+            console.log('My color is white');
+            updateColor('white');
+          }
+          else {
+            console.log('My color is black');
+            updateColor('black');
+          }
+        }
+        else if(data.b) {
+          if(data.b === myUserId) {
+            console.log('My color is black');
+            updateColor('black');
+          }
+          else {
+            console.log('My color is white');
+            updateColor('white');
+          }
+        }
+
+        // Load move history
+        if (data.history.length > 0) {
+          console.log('history exist');
+          const { history } = data;
+          const historyWithNumbers = [];
+          console.log('history: ', history);
+          let moveString = '';
+
+          // Create new game
+          const game = new Chess();
+
+          // Converting move history into a string to use in pgn
+          let nr = 1;
+          let newString = '';
+          for (let i = 0; i < history.length; i += 1) {
+            if (i % 2 === 0) {
+              newString = `${nr}.${history[i]}`;
+              historyWithNumbers.push(newString);
+              nr += 1;
+            } else {
+              historyWithNumbers.push(history[i]);
+            }
+          }
+          moveString = historyWithNumbers.join(' ');
+
+          //Creating pgn
+          const pgn = [
+            moveString,
+          ];
+
+          // Load moves to game
+          // Then update chess, fen and moveHistory
+          game.load_pgn(pgn.join('\n'));
+          updateChess(game);
+          updateFen(game.fen());
+          updateMoveHistory(game.history());
+          // updateTurn(game.turn());
+          console.log('game: ', game);
+        } else {
+          console.log('no history');
+          // updateTurn('white');
+        }
+      });
+  }, [id]);
+
+  // Check for fen updates every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log('Checking for new fen.');
+      axios.get(`${URL}/api/game/${id}`)
+        .then((response) => {
+          newFen = response.data.fen;
+          // If fen has changed, update chess, fen and history
+          if (newFen && newFen !== fen) {
+            console.log('Detected a new fen.');
+            // Adding move to chess
+            newHistory = response.data.history;
+            const latestMove = newHistory[newHistory.length - 1];
+            console.log('latest move: ', latestMove);
+            chess.move(latestMove);
+
+            // Updating fen and history
+            updateFen(newFen);
+            updateMoveHistory(newHistory);
+
+            checkForCheck();
+            checkForGameOver();
+          }
+        });
+    }, 1000);
+
+    return () => {
+      // console.log('clean');
+      clearTimeout(timer);
+    };
+  }, []);
+
+  const squareStyling = ({ pieceSqr, history }) => {
+    const sourceSquare = history.length && history[history.length - 1].from;
+    const targetSquare = history.length && history[history.length - 1].to;
+
+    return {
+      [pieceSqr]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' },
+      ...(history.length && {
+        [sourceSquare]: {
+          backgroundColor: 'rgba(255, 255, 0, 0.4)',
+        },
+      }),
+      ...(history.length && {
+        [targetSquare]: {
+          backgroundColor: 'rgba(255, 255, 0, 0.4)',
+        },
+      }),
+    };
   };
 
-  // show possible moves
+  // Show possible moves
   const highlightSquare = (sourceSquare, squaresToHighlight) => {
+    // console.log('highlightSquare');
+    // console.log('moveHistory: ', moveHistory);
+    // console.log('pieceSquare: ', pieceSquare);
     const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
       (a, c) => ({
         ...a,
         ...{
           [c]: {
             background:
-              'radial-gradient(circle, #fffc00 36%, transparent 40%)',
+                'radial-gradient(circle, #fffc00 36%, transparent 40%)',
             borderRadius: '50%',
           },
         },
         ...squareStyling({
-          history,
+          history: moveHistory,
           pieceSquare,
         }),
       }),
       {},
     );
 
-    setState({
-      ...state,
-      squareStyles: { ...squareStyles, ...highlightStyles },
-    });
+    updateSquareStyles({ ...highlightStyles });
   };
 
-  const onDrop = ({ sourceSquare, targetSquare }) => {
-    // see if the move is legal
-    const move = game.move({
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: 'q', // always promote to a queen for example simplicity
-    });
+  // keep clicked square style and remove hint squares
+  function removeHighlightSquare() {
+    // setState({ ...state, pieceSquare, history });
+  }
 
-    // illegal move
-    if (move === null) return;
-    console.log(game.header().w);
-    axios.post('http://localhost:8000/api/game/move', { gameFen: game.fen(), id }).then(res => console.log(res)).catch(error => {
-      console.log(error.response)
-      if (error.response) {
-        console.log(error.response.data.err)
-      }
-    })
-    setState({
-      ...state,
-      fen: game.fen(),
-      history: game.history({ verbose: true }),
-      squareStyles: squareStyling({ pieceSquare, history }),
-    });
-  };
+  function allowDrag(data) {
+    const { piece } = data;
+    const pieceColor = piece.charAt(0);
+    // Stop a player from moving the opponents pieces
+    if (color === 'white' && pieceColor === 'b') {
+      return false;
+    }
+    if (color === 'black' && pieceColor === 'w') {
+      return false;
+    }
+    // Stop all moves when the game is over
+    if (winner || draw) {
+      return false;
+    }
+    return true;
+  }
 
-  const onMouseOverSquare = (square) => {
-    // get list of possible moves for this square
-    const moves = game.moves({
+  function onMouseOverSquare(square) {
+    // Do nothing if the game is over, or if it's the other player's piece
+    if (winner || draw) return;
+    const piece = chess.get(square);
+    if (piece) {
+      const pieceColor = piece.color;
+      if (color === 'white' && pieceColor === 'b') return;
+      if (color === 'black' && pieceColor === 'w') return;
+    }
+
+    // Get list of possible moves for this square
+    const moves = chess.moves({
       square,
       verbose: true,
     });
 
-    // exit if there are no moves available for this square
+    // Exit if there are no moves available for this square
     if (moves.length === 0) return;
 
     const squaresToHighlight = [];
-    for (let i = 0; i < moves.length; i++) {
+    for (let i = 0; i < moves.length; i += 1) {
       squaresToHighlight.push(moves[i].to);
     }
 
     highlightSquare(square, squaresToHighlight);
-  };
+  }
 
-  const onMouseOutSquare = (square) => removeHighlightSquare(square);
+  function onMouseOutSquare(square) {
+    removeHighlightSquare(square);
+  }
 
-  // central squares get diff dropSquareStyles
-  const onDragOverSquare = (square) => {
-    setState({
-      ...state,
-      dropSquareStyle:
-        square === 'e4' || square === 'd4' || square === 'e5' || square === 'd5'
-          ? { backgroundColor: 'cornFlowerBlue' }
-          : { boxShadow: 'inset 0 0 1px 4px rgb(255, 255, 0)' },
-    });
-  };
+  function onSquareClick(square) {
+    console.log(`${square} was clicked`);
+    // let piece = chess.get(square);
+    // console.log(`piece: ${piece.type}`);
+    console.log('moveHistory: ', moveHistory);
 
-  const onSquareClick = (square) => {
-    setState({
-      ...state,
-      squareStyles: squareStyling({ pieceSquare: square, history }),
-      pieceSquare: square,
-    });
+    // Update states
+    updateSquareStyles(squareStyling({ pieceSquare: square, history: moveHistory }));
+    updatePieceSquare(square);
+  }
 
-    const move = game.move({
-      from: pieceSquare,
-      to: square,
-      promotion: 'q', // always promote to a queen for example simplicity
-    });
+  function onDrop(sourceSquare) {
+    console.log('onDrop');
+    const sourceSq = sourceSquare.sourceSquare;
+    const targetSq = sourceSquare.targetSquare;
+    const { piece } = sourceSquare;
+    const pieceType = piece.split('')[1];
+    const isCapture = chess.get(targetSq);
+    let sloppyMove = '';
 
-    // illegal move
-    if (move === null) return;
+    if (isCapture) {
+      sloppyMove = `${pieceType + sourceSq}x${targetSq}`;
+    } else {
+      sloppyMove = pieceType + sourceSq + targetSq;
+    }
 
-    setState({
-      ...state,
-      fen: game.fen(),
-      history: game.history({ verbose: true }),
-      pieceSquare: '',
-    });
-  };
+    const move = chess.move(sloppyMove, { sloppy: true });
+    console.log('sloppyMove: ', sloppyMove);
+    console.log('chess: ', chess);
+    console.log('chess.moves: ', chess.moves());
+    console.log('chess.turn: ', chess.turn());
+    console.log('move: ', move);
 
-  const onSquareRightClick = (square) => setState({
-    squareStyles: { [square]: { backgroundColor: 'deepPink' } },
-  });
+    // If the move is acceptable, send it to the server
+    if (move) {
+      // Creating variables
+      newFen = chess.fen();
+      newHistory = chess.history();
 
+      // Update fen and history
+      updateFen(newFen);
+      updateMoveHistory(newHistory);
 
-  return children({
-    squareStyles,
-    position: fen,
-    onMouseOverSquare,
-    onMouseOutSquare,
-    onDrop,
-    dropSquareStyle,
-    onDragOverSquare,
-    onSquareClick,
-    onSquareRightClick,
-    id
-  });
-};
-
-const WithMoveValidation = ({ fen, id }) => (
-  <div>
-    <HumanVsHuman id={id} fen={fen}>
-      {({
-        position,
-        fen,
-        onDrop,
-        onMouseOverSquare,
-        onMouseOutSquare,
-        squareStyles,
-        dropSquareStyle,
-        onDragOverSquare,
-        onSquareClick,
-        onSquareRightClick,
-      }) => (
-          <Chessboard
-            id="humanVsHuman"
-            width={320}
-            position={position}
-            onDrop={onDrop}
-            onMouseOverSquare={onMouseOverSquare}
-            onMouseOutSquare={onMouseOutSquare}
-            boardStyle={{
-              borderRadius: '5px',
-              boxShadow: '0 5px 15px rgba(0, 0, 0, 0.5)',
-            }}
-            squareStyles={squareStyles}
-            dropSquareStyle={dropSquareStyle}
-            onDragOverSquare={onDragOverSquare}
-            onSquareClick={onSquareClick}
-            onSquareRightClick={onSquareRightClick}
-          />
-        )}
-    </HumanVsHuman>
-  </div>
-);
-
-const boardsContainer = {
-  display: 'flex',
-  justifyContent: 'space-around',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  width: '100vw',
-  marginTop: 30,
-  marginBottom: 50,
-};
-const Game = () => {
-  let [fen, setFen] = useState('start');
-  let { id } = useParams();
-  const [gameData, setGameData] = useState({})
-  const [errorMessage, setErrorMessage] = useState('')
-  const chess = new Chess();
-  useEffect(() => {
-    const timer = setInterval(() => {
-      axios.get(`${URL}/api/game/${id}`)
-        .then((res) => {
-          if (res.data.err) {
-            setErrorMessage(res.data.err)
-          } else {
-            setGameData(res.data)
-            setFen(res.data.fen ? res.data.fen : 'start')
-          }
-        }).catch(error => {
-          console.log(error.response)
-          if (error.response) {
-            setErrorMessage(error.response.data.err)
-          }
+      // Send move to backend
+      axios.post(`${URL}/api/game/move`, {
+        id,
+        gameFen: newFen, // State fen cannot be used since it may not be updated yet
+        gameHistory: newHistory,
+        gameStyle: 'standard',
+      })
+        .then((response) => {
+        // console.log('POST response in onDrop');
+        // console.log(response);
         })
-    }, 5000)
-    return () => clearTimeout(timer);
-  }, []);
-  console.log(gameData)
+        .catch((error) => {
+          console.log(error);
+        });
+
+      // Check for check + game over
+      checkForCheck();
+      checkForGameOver();
+    }
+  }
+
+  function onClickReset() {
+    chess.reset();
+    updateFen(chess.fen());
+    updateMoveHistory(chess.history());
+
+    // Send reset to backend
+    axios.post(`${URL}/api/game/move`, {
+      id,
+      gameFen: 'start',
+      gameHistory: [],
+      gameStyle: 'standard',
+    })
+      .then((response) => {
+      // console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  // console.log('moveHistory before return: ', moveHistory);
+
   return (
-    <div>
-      <div style={boardsContainer}>
-        <h2>player one : {gameData.playerOne}</h2>
-        {gameData.playerOne && gameData.playerTwo ?
-          <WithMoveValidation game={chess} fen={fen} id={id} />
-          :
-          <p>still waiting another player to join the game</p>}
-      </div>
+    <div className="App">
+      <Helmet><title>Game</title></Helmet>
+      <Link to="/lobby" className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
+      {/* <p><b>{playerOne}</b>{' '}against{' '}<b>{playerTwo}</b></p> */}
+      <h2>Player in turn: {chess.turn() === 'w' ? 'white' : 'black'}</h2>
+      { winner ? (
+        <h2>
+          {winner}
+          {' '}
+won!
+        </h2>
+      ) : null }
+      { draw ? <h2>Remi!</h2> : null }
+      { drawReason ? (
+        <h3>
+        Game was drawn due to
+          {drawReason}
+        </h3>
+      ) : null }
+      { check && !winner && !draw ? <h2>Check!</h2> : null }
+      <Chessboard
+        position={fen}
+        squareStyles={squareStyles}
+        onMouseOverSquare={onMouseOverSquare}
+        onMouseOutSquare={onMouseOutSquare}
+        onSquareClick={onSquareClick}
+        onDrop={onDrop}
+        allowDrag={allowDrag}
+      />
+      <HistoryTable moveHistory={moveHistory} />
+      <button type="button" onClick={onClickReset}>Restart</button>
     </div>
   );
-};
+}
+
+function HistoryTable({ moveHistory: moves }) {
+  const tableRows = [];
+  let round = 1;
+  let whiteMove = '';
+  let blackMove = '';
+  for (let i = 0; i < moves.length; i += 2) {
+    whiteMove = moves[i];
+    blackMove = moves[i + 1];
+    tableRows.push(
+      <tr key={round}>
+        <td>{round}</td>
+        <td>{whiteMove}</td>
+        <td>{blackMove}</td>
+      </tr>,
+    );
+    round += 1;
+  }
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Moves</th>
+        </tr>
+      </thead>
+      <tbody>
+        {tableRows}
+      </tbody>
+    </table>
+  );
+}
 
 export default Game;
