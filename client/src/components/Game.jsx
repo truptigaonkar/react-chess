@@ -13,10 +13,10 @@ function Game() {
   const [chess, updateChess] = useState(new Chess());
   const [fen, updateFen] = useState('start');
   const [moveHistory, updateMoveHistory] = useState([]);
+  const [gameStarted, updateGameStarted] = useState(false);
   const [playerOne, updatePlayerOne] = useState('');
   const [playerTwo, updatePlayerTwo] = useState('');
-  const [color, updateColor] = useState('');
-  const [turn, updateTurn] = useState('');
+  const [myColor, updateMyColor] = useState('');
   const [squareStyles, updateSquareStyles] = useState({});
   const [pieceSquare, updatePieceSquare] = useState('');
   const [check, updateCheck] = useState(false);
@@ -83,7 +83,7 @@ function Game() {
           return console.log(err);
         }
 
-        console.log('Answer from /game/id: ', data);
+        // console.log('Answer from /game/id: ', data);
 
         // Start game if not started
         // Player two starts the game when entering game page
@@ -91,7 +91,7 @@ function Game() {
         if(!data.started && data.playerOne && myUserId !== data.playerOne) {
           axios.post(`${URL}/api/game/play`, {
             playerTwo: myUserId,
-             id
+            id: id
           })
           .then(function (response) {
             console.log('response from /game/play: ', response);
@@ -103,32 +103,20 @@ function Game() {
 
         // Set color
         if(data.w) {
-          if(data.w === myUserId) {
-            console.log('My color is white');
-            updateColor('white');
-          }
-          else {
-            console.log('My color is black');
-            updateColor('black');
-          }
+          if(data.w === myUserId) updateMyColor('w');
+          else updateMyColor('b');
         }
         else if(data.b) {
-          if(data.b === myUserId) {
-            console.log('My color is black');
-            updateColor('black');
-          }
-          else {
-            console.log('My color is white');
-            updateColor('white');
-          }
+          if(data.b === myUserId) updateMyColor('b');
+          else updateMyColor('w');
         }
 
         // Load move history
         if (data.history.length > 0) {
-          console.log('history exist');
+          // console.log('history exist');
           const { history } = data;
           const historyWithNumbers = [];
-          console.log('history: ', history);
+          // console.log('history: ', history);
           let moveString = '';
 
           // Create new game
@@ -159,11 +147,8 @@ function Game() {
           updateChess(game);
           updateFen(game.fen());
           updateMoveHistory(game.history());
-          // updateTurn(game.turn());
-          console.log('game: ', game);
         } else {
-          console.log('no history');
-          // updateTurn('white');
+          // console.log('no history');
         }
       });
   }, [id]);
@@ -174,14 +159,28 @@ function Game() {
       console.log('Checking for new fen.');
       axios.get(`${URL}/api/game/${id}`)
         .then((response) => {
-          newFen = response.data.fen;
+          // console.log(response);
+          // console.log('response.data.started: ', response.data.started);
+
+          // Check if game is started
+          if(!gameStarted && response.data.started) {
+            updateGameStarted(true);
+            updatePlayerOne(response.data.playerOne);
+            updatePlayerTwo(response.data.playerTwo);
+          }
+
           // If fen has changed, update chess, fen and history
+          newFen = response.data.fen;
+          // console.log('fen: ', fen);
+          // console.log('newFen: ', newFen);
           if (newFen && newFen !== fen) {
-            console.log('Detected a new fen.');
+            // console.log('Detected a new fen.');
+
             // Adding move to chess
+            // ****Try to use updateChess too****
             newHistory = response.data.history;
             const latestMove = newHistory[newHistory.length - 1];
-            console.log('latest move: ', latestMove);
+            // console.log('latest move: ', latestMove);
             chess.move(latestMove);
 
             // Updating fen and history
@@ -205,15 +204,15 @@ function Game() {
     const targetSquare = history.length && history[history.length - 1].to;
 
     return {
-      [pieceSqr]: { backgroundColor: 'rgba(255, 255, 0, 0.4)' },
+      [pieceSqr]: { backgroundcolor: 'rgba(255, 255, 0, 0.4)' },
       ...(history.length && {
         [sourceSquare]: {
-          backgroundColor: 'rgba(255, 255, 0, 0.4)',
+          backgroundcolor: 'rgba(255, 255, 0, 0.4)',
         },
       }),
       ...(history.length && {
         [targetSquare]: {
-          backgroundColor: 'rgba(255, 255, 0, 0.4)',
+          backgroundcolor: 'rgba(255, 255, 0, 0.4)',
         },
       }),
     };
@@ -252,14 +251,18 @@ function Game() {
 
   function allowDrag(data) {
     const { piece } = data;
-    const pieceColor = piece.charAt(0);
+    const piececolor = piece.charAt(0);
     // Stop a player from moving the opponents pieces
-    if (color === 'white' && pieceColor === 'b') {
+    if(myColor !== piececolor) {
       return false;
     }
-    if (color === 'black' && pieceColor === 'w') {
-      return false;
-    }
+    // if (myColor === 'w' && piececolor === 'b') {
+    //   return false;
+    // }
+    // if (myColor === 'b' && piececolor === 'w') {
+    //   return false;
+    // }
+
     // Stop all moves when the game is over
     if (winner || draw) {
       return false;
@@ -272,9 +275,10 @@ function Game() {
     if (winner || draw) return;
     const piece = chess.get(square);
     if (piece) {
-      const pieceColor = piece.color;
-      if (color === 'white' && pieceColor === 'b') return;
-      if (color === 'black' && pieceColor === 'w') return;
+      const piececolor = piece.color;
+      if (myColor !== piececolor) return;
+      // if (myColor === 'w' && piececolor === 'b') return;
+      // if (myColor === 'b' && piececolor === 'w') return;
     }
 
     // Get list of possible moves for this square
@@ -325,11 +329,11 @@ function Game() {
     }
 
     const move = chess.move(sloppyMove, { sloppy: true });
-    console.log('sloppyMove: ', sloppyMove);
-    console.log('chess: ', chess);
-    console.log('chess.moves: ', chess.moves());
-    console.log('chess.turn: ', chess.turn());
-    console.log('move: ', move);
+    // console.log('sloppyMove: ', sloppyMove);
+    // console.log('chess: ', chess);
+    // console.log('chess.moves: ', chess.moves());
+    // console.log('chess.turn: ', chess.turn());
+    // console.log('move: ', move);
 
     // If the move is acceptable, send it to the server
     if (move) {
@@ -383,13 +387,16 @@ function Game() {
   }
 
   // console.log('moveHistory before return: ', moveHistory);
+  // console.log('fen before return: ', fen);
+  // console.log('chess.turn before return: ', chess.turn()); //Chess.turn is not correct here!
+  // console.log('myColor before return: ', myColor);
 
   return (
     <div className="App">
       <Helmet><title>Game</title></Helmet>
       <Link to="/lobby" className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
-      {/* <p><b>{playerOne}</b>{' '}against{' '}<b>{playerTwo}</b></p> */}
-      <h2>Player in turn: {chess.turn() === 'w' ? 'white' : 'black'}</h2>
+      { gameStarted ? <h2>{playerOne}{' '}against{' '}{playerTwo}</h2> : null }
+      { chess.turn() === myColor ? <h2>It's your turn!</h2> : null }
       { winner ? (
         <h2>
           {winner}
