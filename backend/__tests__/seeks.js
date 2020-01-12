@@ -9,10 +9,31 @@ const url = 'http://localhost:8000/api';
 const testId = 'testUser';
 const shortId = 'boo';
 const validFriend = 'testFriend';
+let existingUserId;
 let gameId;
 let gameWithFriendId;
 let gameIdToDelete;
 let userIdToDelete;
+
+beforeAll((done) => {
+  mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useCreateIndex: true
+  }, (err) => {
+    if (err) {
+      console.error(err);
+    }
+
+    GameModel.find({}, (err, docs) => {
+      if (err) {
+        console.error(err);
+      } else {
+        existingUserId = docs[0].startedBy
+        done();
+      }
+    });
+  });
+});
 
 afterAll((done) => {
   mongoose.connect(uri, {
@@ -162,6 +183,20 @@ describe('POST /newUser', () => {
     expect(response.body.err).toEqual('userId must be at least 5 characters long');
     return response;
   });
+
+  it('fails when userId already exists', async () => {
+    const response = await request(url)
+      .post('/newUser')
+      .send({
+        userId: existingUserId
+      })
+      .expect('Content-Type', /json/);
+    expect(response.statusCode).toEqual(400);
+    expect(typeof response.body).toBe('object');
+    expect(response.body.err).toEqual('there is already a user with this id');
+    return response;
+  });
+
 });
 
 describe('POST /withFriend', () => {
