@@ -93,11 +93,12 @@ describe('POST /seeks', () => {
       .expect(200);
   });
 
-  it('succeeds when valid userId is sent', async () => {
+  it('succeeds when valid userId and color are sent', async () => {
     const response = await request(url)
       .post('/seeks')
       .send({
-        userId: testId
+        userId: testId,
+        color: "b" //"b" for black or "w" for white 
       })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);

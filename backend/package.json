@@ -18,7 +18,8 @@
   "scripts": {
     "backend-test": "jest",
     "lint": "eslint --ext .js --ext .jsx .",
-    "server": "node ./backend/server.js"
+    "server": "node ./backend/server.js",
+    "start": "nodemon server.js"
   },
   "jest": {
     "testEnvironment": "node",
@@ -28,18 +29,6 @@
   },
   "eslintConfig": {
     "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "devDependencies": {
     "eslint": "^6.7.2",
