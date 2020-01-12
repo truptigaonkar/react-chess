@@ -17,7 +17,7 @@ exports.playGame = (req, res) => {
       return res.json({ err: errorHandler(err) });
     }
     if (!game) {
-      return res.json({ err: 'no game with this id ' });
+      return res.json({ err: 'no game with this id exists' });
     }
     game.playerTwo = playerTwo;
     return res.json(game);
@@ -48,19 +48,20 @@ exports.gameMove = (req, res) => {
 
 exports.deleteGame = (req, res) => {
   const { id, userId } = req.body;
+
   Game.findById(id).exec((err, game) => {
     if (err) {
       return res.json({ err: errorHandler(err) });
     }
     if (!game) {
-      return res.json({ err: 'this game not available just now' });
+      return res.json({ err: 'this game is not available on database' });
     }
-    if (game) {
+    if (game) { 
       if (userId === game.playerOne && !game.playerTwo) {
         game.remove();
-        return res.json({ message: 'this game created by this player' });
+        return res.json({ message: 'this game has been successfully deleted' });
       }
-      return res.json({ message: `this game created by this ${game.playerOne}` });
+      return res.json({ message: `you cannot delete a game created by ${game.playerOne}` });
     }
   });
 };

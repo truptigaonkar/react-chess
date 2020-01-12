@@ -46,8 +46,10 @@ exports.playGameValidation = [
 exports.deleteGameValidation = [
   check('id')
     .not()
-    .isEmpty(),
+    .isEmpty()
+    .withMessage('id is required'),
   check('userId')
     .not()
-    .isEmpty(),
+    .isEmpty()
+    .withMessage('userId is required'),
 ];
