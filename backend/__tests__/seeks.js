@@ -15,7 +15,10 @@ let gameIdToDelete;
 let userIdToDelete;
 
 afterAll((done) => {
-  mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true }, (err) => {
+  mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useCreateIndex: true
+  }, (err) => {
     if (err) {
       console.error(err);
     }
@@ -23,17 +26,20 @@ afterAll((done) => {
     GameModel.find({}, (err, docs) => {
       if (err) {
         console.error(err);
-      } else {   
-        gameIdToDelete = docs[docs.length-1]._id
-        userIdToDelete = docs[docs.length-1].startedBy
+      } else {
+        gameIdToDelete = docs[docs.length - 1]._id
+        userIdToDelete = docs[docs.length - 1].startedBy
         done();
       }
     });
   });
   return request(url)
-  .post('/game/deleteUnActiveGame')
-  .send({ id: gameIdToDelete, userId: userIdToDelete })
-  .expect(200);
+    .post('/game/deleteUnActiveGame')
+    .send({
+      id: gameIdToDelete,
+      userId: userIdToDelete
+    })
+    .expect(200);
 });
 
 describe('GET /seeks', () => {
@@ -58,15 +64,20 @@ describe('GET /seeks', () => {
 describe('POST /seeks', () => {
   afterAll(() => {
     return request(url)
-    .post('/game/deleteUnActiveGame')
-    .send({ id: gameId, userId: testId })
-    .expect(200);
+      .post('/game/deleteUnActiveGame')
+      .send({
+        id: gameId,
+        userId: testId
+      })
+      .expect(200);
   });
 
   it('succeeds when valid userId is sent', async () => {
     const response = await request(url)
       .post('/seeks')
-      .send({ userId: testId })
+      .send({
+        userId: testId
+      })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
     expect(typeof response.body).toBe('object');
@@ -91,7 +102,9 @@ describe('POST /seeks', () => {
   it('fails when userId is shorter than 5 characters', async () => {
     const response = await request(url)
       .post('/seeks')
-      .send({ userId: shortId })
+      .send({
+        userId: shortId
+      })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
     expect(typeof response.body).toBe('object');
@@ -102,21 +115,23 @@ describe('POST /seeks', () => {
 
 describe('POST /newUser', () => {
   function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
   }
- 
-  const newUser = makeid(5); 
+
+  const newUser = makeid(5);
 
   it('succeeds when valid userId is sent', async () => {
     const response = await request(url)
       .post('/newUser')
-      .send({ userId: newUser })
+      .send({
+        userId: newUser
+      })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
     expect(typeof response.body).toBe('object');
@@ -138,7 +153,9 @@ describe('POST /newUser', () => {
   it('fails when userId is shorter than 5 characters', async () => {
     const response = await request(url)
       .post('/newUser')
-      .send({ userId: shortId })
+      .send({
+        userId: shortId
+      })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
     expect(typeof response.body).toBe('object');
@@ -150,15 +167,21 @@ describe('POST /newUser', () => {
 describe('POST /withFriend', () => {
   afterAll(() => {
     return request(url)
-    .post('/game/deleteUnActiveGame')
-    .send({ id: gameWithFriendId, userId: validFriend })
-    .expect(200)
+      .post('/game/deleteUnActiveGame')
+      .send({
+        id: gameWithFriendId,
+        userId: validFriend
+      })
+      .expect(200)
   });
 
   it('succeeds when valid userId is sent', async () => {
     const response = await request(url)
       .post('/withFriend')
-      .send({ userId: validFriend, friendId: testId })
+      .send({
+        userId: validFriend,
+        friendId: testId
+      })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
     expect(typeof response.body).toBe('object');
@@ -174,7 +197,9 @@ describe('POST /withFriend', () => {
   it('fails without userId', async () => {
     const response = await request(url)
       .post('/withFriend')
-      .send({ friendId: validFriend })
+      .send({
+        friendId: validFriend
+      })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
     expect(response.body.err).toEqual('userId is required');
@@ -184,7 +209,9 @@ describe('POST /withFriend', () => {
   it('fails without friendId', async () => {
     const response = await request(url)
       .post('/withFriend')
-      .send({ userId: testId })
+      .send({
+        userId: testId
+      })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
     expect(response.body.err).toEqual('friendId is required');
@@ -194,7 +221,10 @@ describe('POST /withFriend', () => {
   it('fails when userId is shorter than 5 characters', async () => {
     const response = await request(url)
       .post('/withFriend')
-      .send({ userId: shortId, friendId: validFriend })
+      .send({
+        userId: shortId,
+        friendId: validFriend
+      })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
     expect(typeof response.body).toBe('object');
@@ -206,7 +236,10 @@ describe('POST /withFriend', () => {
   it('fails when friendId is shorter than 5 characters', async () => {
     const response = await request(url)
       .post('/withFriend')
-      .send({ userId: testId, friendId: shortId })
+      .send({
+        userId: testId,
+        friendId: shortId
+      })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(422);
     expect(typeof response.body).toBe('object');
