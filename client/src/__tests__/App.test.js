@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
+import { mount, configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { MemoryRouter } from 'react-router'; 
 import '@testing-library/jest-dom/extend-expect';
@@ -20,9 +20,16 @@ describe('App component', () => {
       </MemoryRouter>
     );
     expect(wrapper.find(Start)).toHaveLength(1);
-    expect(wrapper.find('Route[path="/lobby"]).first().prop('component')).toBe(Lobby);
-    expect(wrapper.find(Lobby)).toHaveLength(0);
-    expect(wrapper.find(Game)).toHaveLength(0);
+  });
+
+  it('routes /lobby to Lobby', () => {
+    const component = shallow(<App />);
+    expect(component.find('Route[path="/lobby"]').first().prop('component')).toBe(Lobby);
+  });
+
+  it('routes /game to Game', () => {
+    const component = shallow(<App />);
+    expect(component.find('Route[path="/game"]').first().prop('component')).toBe(Game);
   });
 
   /* it('renders Lobby component', () => {
