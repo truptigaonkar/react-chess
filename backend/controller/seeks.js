@@ -26,17 +26,16 @@ exports.newUser = (req, res) => {
         err: 'there is already a user with this id',
       });
     }
-    if (!seeker) {
-      const newSeeker = new Seek({ userId });
-      newSeeker.save((newErr, resSeeker) => {
-        if (newErr) {
-          return res.status(400).json({
-            err: errorHandler(newErr),
-          });
-        }
-        return res.json(resSeeker);
-      });
-    }
+    const newSeeker = new Seek({ userId });
+    newSeeker.save((newErr, resSeeker) => {
+      if (newErr) {
+        return res.status(400).json({
+          err: errorHandler(newErr),
+        });
+      }
+      return res.json(resSeeker);
+    });
+
   });
 };
 exports.newMatches = (req, res) => {

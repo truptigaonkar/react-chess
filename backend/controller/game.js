@@ -26,7 +26,8 @@ exports.playGame = (req, res) => {
     }
     game.started = true;
     game.playerTwo = playerTwo;
-    game.save();
+    game.save()
+    return res.json(game);
   });
 };
 exports.gameMove = (req, res) => {
@@ -62,7 +63,7 @@ exports.deleteGame = (req, res) => {
     if (!game) {
       return res.json({ err: 'this game is not available on database' });
     }
-    if (game) { 
+    if (game) {
       if (userId === game.playerOne && !game.playerTwo) {
         game.remove();
         return res.json({ message: 'this game has been successfully deleted' });
