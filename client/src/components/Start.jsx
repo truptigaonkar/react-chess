@@ -102,7 +102,7 @@ const Login = () => {
             <Crown className={classes.logo} />
             <Typography component="h1" variant="h5">
               Chess
-          </Typography>
+            </Typography>
 
             <form className={classes.form} onSubmit={handleAddUser}>
               <TextField
@@ -111,12 +111,13 @@ const Login = () => {
                 required
                 fullWidth
                 id="userId"
-                label="insert your user id"
+                label="Please enter your user ID"
                 name="userId"
-                helperText="must be at least 5 letters long"
+                helperText="User ID must be at least 5 characters long"
                 autoComplete="name"
                 onChange={onChangeUsername}
                 autoFocus
+                data-testid="input"
               />
               <p style={{ color: 'red' }}>{errorMessage}</p>
               <Button

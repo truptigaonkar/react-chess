@@ -7,7 +7,7 @@ import Game from './components/Game';
 
 const App = () => (
   <div className="App">
-    <Router basename={process.env.PUBLIC_URL}>
+    <Router basename={process.env.PUBLIC_URL} data-testid="container">
       <Route exact path="/" component={Start} />
       <Route path="/lobby" component={Lobby} />
       <Route path="/game/:id" component={Game} />
