@@ -52,21 +52,6 @@ function Game() {
     }
   }
 
-  // Play a random game
-  // useEffect(() => {
-  //   while (!chess.game_over()) {
-  //     var moves = chess.moves();
-  //     var move = moves[Math.floor(Math.random() * moves.length)];
-  //     chess.move(move);
-  //     //Update fen and history
-  //     updateFen(chess.fen());
-  //     updateMoveHistory(chess.history());
-  //     //Check for game over
-  //     checkForCheck();
-  //     checkForGameOver();
-  //   }
-  // }, []);
-
   useEffect(() => {
 
     // GET request
@@ -76,11 +61,8 @@ function Game() {
           return console.log(err);
         }
 
-        // console.log('Answer from /game/id: ', data);
-
         // Fetch user id from local storage
         const myUserId = window.localStorage.getItem('userId');
-        console.log('myUserId: ', myUserId);
 
         // Start game if not started
         // Player two starts the game when entering game page
@@ -91,7 +73,7 @@ function Game() {
             id: id
           })
           .then(function (response) {
-            console.log('response from /game/play: ', response);
+            return response;
           })
           .catch(function (error) {
             console.log(error);
@@ -110,10 +92,8 @@ function Game() {
 
         // Load move history
         if (data.history.length > 0) {
-          // console.log('history exist');
           const { history } = data;
           const historyWithNumbers = [];
-          // console.log('history: ', history);
           let moveString = '';
 
           // Create new game
@@ -141,12 +121,9 @@ function Game() {
           // Load moves to game
           // Then update chess, fen and moveHistory
           game.load_pgn(pgn.join('\n'));
-          console.log('game.turn() ', game.turn());
           updateChess(game);
           updateFen(game.fen());
           updateMoveHistory(game.history());
-        } else {
-          // console.log('no history');
         }
       });
   }, [id]);
@@ -155,11 +132,8 @@ function Game() {
   // If game not started, check for game started
   useEffect(() => {
     const timer = setInterval(() => {
-      console.log('Checking for new fen.');
       axios.get(`${URL}/api/game/${id}`)
         .then((response) => {
-          console.log(response);
-          // console.log('response.data.started: ', response.data.started);
 
           // Check if game is started
           if(!gameStarted && response.data.started) {
@@ -174,9 +148,6 @@ function Game() {
 
             // Adding moves to chess
             let newHistory = response.data.history;
-            // const latestMove = newHistory[newHistory.length - 1];
-            // chess.move(latestMove);
-            // console.log(chess.turn());
             const newChess = new Chess();
             for(let move of newHistory) {
               newChess.move(move)
@@ -192,7 +163,6 @@ function Game() {
     }, 1000);
 
     return () => {
-      // console.log('clean');
       clearTimeout(timer);
     };
   }, []);
@@ -218,9 +188,6 @@ function Game() {
 
   // Show possible moves
   const highlightSquare = (sourceSquare, squaresToHighlight) => {
-    // console.log('highlightSquare');
-    // console.log('moveHistory: ', moveHistory);
-    // console.log('pieceSquare: ', pieceSquare);
     const highlightStyles = [sourceSquare, ...squaresToHighlight].reduce(
       (a, c) => ({
         ...a,
@@ -294,18 +261,12 @@ function Game() {
   }
 
   function onSquareClick(square) {
-    console.log(`${square} was clicked`);
-    // let piece = chess.get(square);
-    // console.log(`piece: ${piece.type}`);
-    console.log('moveHistory: ', moveHistory);
-
     // Update states
     updateSquareStyles(squareStyling({ pieceSquare: square, history: moveHistory }));
     updatePieceSquare(square);
   }
 
   function onDrop(sourceSquare) {
-    console.log('onDrop');
     const sourceSq = sourceSquare.sourceSquare;
     const targetSq = sourceSquare.targetSquare;
     const { piece } = sourceSquare;
@@ -320,11 +281,6 @@ function Game() {
     }
 
     const move = chess.move(sloppyMove, { sloppy: true });
-    // console.log('sloppyMove: ', sloppyMove);
-    // console.log('chess: ', chess);
-    // console.log('chess.moves: ', chess.moves());
-    // console.log('chess.turn: ', chess.turn());
-    // console.log('move: ', move);
 
     // If the move is acceptable, send it to the server
     if (move) {
@@ -344,8 +300,7 @@ function Game() {
         gameStyle: 'standard',
       })
         .then((response) => {
-        // console.log('POST response in onDrop');
-        // console.log(response);
+          return response;
         })
         .catch((error) => {
           console.log(error);
@@ -356,31 +311,6 @@ function Game() {
       checkForGameOver();
     }
   }
-
-  function onClickReset() {
-    chess.reset();
-    updateFen(chess.fen());
-    updateMoveHistory(chess.history());
-
-    // Send reset to backend
-    axios.post(`${URL}/api/game/move`, {
-      id,
-      gameFen: 'start',
-      gameHistory: [],
-      gameStyle: 'standard',
-    })
-      .then((response) => {
-      // console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  // console.log('moveHistory before return: ', moveHistory);
-  // console.log('fen before return: ', fen);
-  // console.log('chess.turn before return: ', chess.turn()); //Chess.turn is not correct here!
-  // console.log('myColor before return: ', myColor);
 
   return (
     <div className="App">
@@ -415,7 +345,6 @@ won!
         />
         <HistoryTable moveHistory={moveHistory} />
       </div>
-      <button type="button" onClick={onClickReset}>Restart</button>
     </div>
   );
 }
