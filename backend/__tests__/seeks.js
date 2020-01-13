@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const uri = process.env.DATABASE;
 const url = 'http://localhost:8000/api';
-const testId = 'testUsesr';
+const testId = 'basel';
 const shortId = 'boo';
 const validFriend = 'testFriend';
 let existingUserId;
