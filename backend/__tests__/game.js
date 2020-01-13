@@ -74,7 +74,7 @@ afterAll(() => {
     .post('/game/deleteUnActiveGame')
     .send({
       id: gameId,
-      userId: testUser,
+      userId: testId,
     })
     .expect('Content-Type', /json/)
     .expect(200);
