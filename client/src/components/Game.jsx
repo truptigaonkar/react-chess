@@ -69,12 +69,7 @@ function Game() {
   //   }
   // }, []);
 
-  // Check if there are two players
-  // If there is a move history, add it to the Chess game
   useEffect(() => {
-    // Fetch user id from local storage
-    const myUserId = window.localStorage.getItem('userId');
-    console.log('myUserId: ', myUserId);
 
     // GET request
     axios.get(`${URL}/api/game/${id}`)
@@ -84,6 +79,10 @@ function Game() {
         }
 
         // console.log('Answer from /game/id: ', data);
+
+        // Fetch user id from local storage
+        const myUserId = window.localStorage.getItem('userId');
+        console.log('myUserId: ', myUserId);
 
         // Start game if not started
         // Player two starts the game when entering game page
@@ -154,6 +153,7 @@ function Game() {
   }, [id]);
 
   // Check for fen updates every second
+  // If game not started, check for game started
   useEffect(() => {
     const timer = setInterval(() => {
       console.log('Checking for new fen.');
@@ -252,17 +252,18 @@ function Game() {
   function allowDrag(data) {
     const { piece } = data;
     const piececolor = piece.charAt(0);
+    console.log('myColor in allowDrag: ', myColor);
+    console.log('piececolor in allowDrag: ', piececolor);
     // Stop a player from moving the opponents pieces
-    if(myColor !== piececolor) {
+    // if(myColor !== piececolor) {
+    //   return false;
+    // }
+    if (myColor === 'w' && piececolor === 'b') {
       return false;
     }
-    // if (myColor === 'w' && piececolor === 'b') {
-    //   return false;
-    // }
-    // if (myColor === 'b' && piececolor === 'w') {
-    //   return false;
-    // }
-
+    if (myColor === 'b' && piececolor === 'w') {
+      return false;
+    }
     // Stop all moves when the game is over
     if (winner || draw) {
       return false;
@@ -277,8 +278,6 @@ function Game() {
     if (piece) {
       const piececolor = piece.color;
       if (myColor !== piececolor) return;
-      // if (myColor === 'w' && piececolor === 'b') return;
-      // if (myColor === 'b' && piececolor === 'w') return;
     }
 
     // Get list of possible moves for this square
@@ -396,7 +395,7 @@ function Game() {
       <Helmet><title>Game</title></Helmet>
       <Link to="/lobby" className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
       { gameStarted ? <h2>{playerOne}{' '}against{' '}{playerTwo}</h2> : null }
-      { chess.turn() === myColor ? <h2>It's your turn!</h2> : null }
+      { gameStarted && chess.turn() === myColor ? <h2>It's your turn!</h2> : null }
       { winner ? (
         <h2>
           {winner}
@@ -412,16 +411,18 @@ won!
         </h3>
       ) : null }
       { check && !winner && !draw ? <h2>Check!</h2> : null }
-      <Chessboard
-        position={fen}
-        squareStyles={squareStyles}
-        onMouseOverSquare={onMouseOverSquare}
-        onMouseOutSquare={onMouseOutSquare}
-        onSquareClick={onSquareClick}
-        onDrop={onDrop}
-        allowDrag={allowDrag}
-      />
-      <HistoryTable moveHistory={moveHistory} />
+      <div className="game-wrapper">
+        <Chessboard
+          position={fen}
+          squareStyles={squareStyles}
+          onMouseOverSquare={onMouseOverSquare}
+          onMouseOutSquare={onMouseOutSquare}
+          onSquareClick={onSquareClick}
+          onDrop={onDrop}
+          allowDrag={allowDrag}
+        />
+        <HistoryTable moveHistory={moveHistory} />
+      </div>
       <button type="button" onClick={onClickReset}>Restart</button>
     </div>
   );
