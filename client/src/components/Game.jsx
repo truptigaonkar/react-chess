@@ -55,6 +55,8 @@ import {
   useParams, useHistory,
 } from 'react-router-dom';
 import axios from 'axios';
+import { Typography, Link, Button, AppBar, Toolbar } from '@material-ui/core';
+import LogoutModal from './LogoutModal'
 
 const squareStyling = ({ pieceSquare, history }) => {
   const sourceSquare = history.length && history[history.length - 1].from;
@@ -284,6 +286,8 @@ const Game = () => {
   const [gameData, setGameData] = useState({})
   const [errorMessage, setErrorMessage] = useState('')
   const chess = new Chess();
+  const [openLogoutModal, setOpenLogoutModal] = useState(false);
+  const [userId, setUserId] = useState(localStorage.getItem('userId'))
   useEffect(() => {
     const timer = setInterval(() => {
       axios.get(`${URL}/api/game/${id}`)
@@ -306,6 +310,18 @@ const Game = () => {
   console.log(gameData)
   return (
     <div>
+    <AppBar position="static">
+  <Toolbar>
+  <Typography variant="h6">
+   Welcome, {localStorage.getItem('userId') && localStorage.getItem('userId')}
+          </Typography>
+          <Button color="inherit"><Link color="inherit" href="/lobby" style={{ textDecoration: 'none' }}>
+    Lobby
+  </Link></Button>
+          <Button style={{ position:'absolute', right:0 }} color="inherit" onClick={() => setOpenLogoutModal(true)}>Logout</Button>     
+  </Toolbar>
+</AppBar>
+<LogoutModal openLogoutModal={openLogoutModal} setUserId={setUserId} userId={userId} setOpenLogoutModal={setOpenLogoutModal} />
       <div style={boardsContainer}>
         <h2>player one : {gameData.playerOne}</h2>
         {gameData.playerOne && gameData.playerTwo ?

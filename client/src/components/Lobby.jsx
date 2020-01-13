@@ -4,7 +4,7 @@ import axios from 'axios';
 import Helmet from 'react-helmet';
 import { Link, useHistory } from 'react-router-dom';
 import { URL } from "../components/config";
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Button, Container, Grid, ButtonGroup } from '@material-ui/core';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Button, Container, Grid, ButtonGroup, AppBar, Toolbar, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import NewGameModal from './NewGameModal'
 import PlayWithFriendModal from './PlayWIthFriendModal'
@@ -78,11 +78,16 @@ const Lobby = () => {
   return (
     <div className={classes.root}>
       <Helmet><title>Lobby</title></Helmet>
+      <AppBar position="static">
+  <Toolbar>
+  <Typography variant="h6" className={classes.title}>
+   Welcome, {localStorage.getItem('userId') && localStorage.getItem('userId')}
+          </Typography>
+          <Button style={{ position:'absolute', right:0 }} color="inherit" onClick={() => setOpenLogoutModal(true)}>Logout</Button>     
+  </Toolbar>
+</AppBar>
       <Container>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h3>Welcome {localStorage.getItem('userId') && localStorage.getItem('userId')}</h3>
-          <Button onClick={() => setOpenLogoutModal(true)}>Logout</Button>
-        </div>
+        <br />
         <NewGameModal openNewGameModal={openNewGameModal} setOpenNewGameModal={setOpenNewGameModal} userId={userId} />
         <PlayWithFriendModal openWithFriendModal={openWithFriendModal} setOpenWithFriendModal={setOpenWithFriendModal} userId={userId} />
         <LogoutModal openLogoutModal={openLogoutModal} setUserId={setUserId} userId={userId} setOpenLogoutModal={setOpenLogoutModal} />
@@ -167,7 +172,6 @@ const Lobby = () => {
               >
                 <Button onClick={() => setOpenNewGameModal(true)}>New Game</Button>
                 <Button onClick={() => setOpenWithFriendModal(true)}>Play With Friend</Button>
-                <Button >Play With Computer</Button>
               </ButtonGroup>
             </Paper>
           </Grid>
