@@ -8,8 +8,6 @@ import { URL } from './config';
 
 function Game() {
   const { id } = useParams();
-  let newFen = '';
-  let newHistory = [];
   const [chess, updateChess] = useState(new Chess());
   const [fen, updateFen] = useState('start');
   const [moveHistory, updateMoveHistory] = useState([]);
@@ -143,6 +141,7 @@ function Game() {
           // Load moves to game
           // Then update chess, fen and moveHistory
           game.load_pgn(pgn.join('\n'));
+          console.log('game.turn() ', game.turn());
           updateChess(game);
           updateFen(game.fen());
           updateMoveHistory(game.history());
@@ -159,7 +158,7 @@ function Game() {
       console.log('Checking for new fen.');
       axios.get(`${URL}/api/game/${id}`)
         .then((response) => {
-          // console.log(response);
+          console.log(response);
           // console.log('response.data.started: ', response.data.started);
 
           // Check if game is started
@@ -170,23 +169,22 @@ function Game() {
           }
 
           // If fen has changed, update chess, fen and history
-          newFen = response.data.fen;
-          // console.log('fen: ', fen);
-          // console.log('newFen: ', newFen);
+          let newFen = response.data.fen;
           if (newFen && newFen !== fen) {
-            // console.log('Detected a new fen.');
 
-            // Adding move to chess
-            // ****Try to use updateChess too****
-            newHistory = response.data.history;
-            const latestMove = newHistory[newHistory.length - 1];
-            // console.log('latest move: ', latestMove);
-            chess.move(latestMove);
+            // Adding moves to chess
+            let newHistory = response.data.history;
+            // const latestMove = newHistory[newHistory.length - 1];
+            // chess.move(latestMove);
+            // console.log(chess.turn());
+            const newChess = new Chess();
+            for(let move of newHistory) {
+              newChess.move(move)
+            }
 
-            // Updating fen and history
+            updateChess(newChess);
             updateFen(newFen);
             updateMoveHistory(newHistory);
-
             checkForCheck();
             checkForGameOver();
           }
@@ -252,12 +250,6 @@ function Game() {
   function allowDrag(data) {
     const { piece } = data;
     const piececolor = piece.charAt(0);
-    console.log('myColor in allowDrag: ', myColor);
-    console.log('piececolor in allowDrag: ', piececolor);
-    // Stop a player from moving the opponents pieces
-    // if(myColor !== piececolor) {
-    //   return false;
-    // }
     if (myColor === 'w' && piececolor === 'b') {
       return false;
     }
@@ -337,8 +329,8 @@ function Game() {
     // If the move is acceptable, send it to the server
     if (move) {
       // Creating variables
-      newFen = chess.fen();
-      newHistory = chess.history();
+      let newFen = chess.fen();
+      let newHistory = chess.history();
 
       // Update fen and history
       updateFen(newFen);
