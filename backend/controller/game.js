@@ -26,7 +26,7 @@ exports.playGame = (req, res) => {
     }
     game.started = true;
     game.playerTwo = playerTwo;
-    game.save()
+    game.save();
   });
 };
 exports.gameMove = (req, res) => {

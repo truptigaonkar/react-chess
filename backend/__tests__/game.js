@@ -48,7 +48,7 @@ beforeAll((done) => {
         GameModel.find({}, (err, docs) => {
           if (err) {
             console.error(err);
-          } else {
+          } else {  
             gameId = docs[docs.length - 1]._id
             done();
           }
