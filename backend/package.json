@@ -16,7 +16,7 @@
     "nodemon": "^1.19.4"
   },
   "scripts": {
-    "backend-test": "jest",
+    "backend-test": "jest __tests__/",
     "lint": "eslint --ext .js --ext .jsx .",
     "server": "node ./backend/server.js",
     "start": "nodemon server.js"

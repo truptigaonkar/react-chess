@@ -9,6 +9,7 @@ const GameModel = require('../models/game');
 
 const uri = process.env.DATABASE;
 const url = 'http://localhost:8000/api';
+const testId = 'tester';
 let testUser;
 let gameId;
 
@@ -39,13 +40,11 @@ const testFen = chess.fen();
  * Save the id and userId of the test game object in game database
  * */
 beforeAll((done) => {
-  testUser = makeid(5);
-  console.log(testUser);
-  
   return request(url)
     .post('/seeks')
     .send({
-      userId: testUser
+      userId: testId,
+      color: 'w'
     })
     .expect('Content-Type', /json/)
     .expect(200)
@@ -61,9 +60,8 @@ beforeAll((done) => {
         GameModel.find({}, (err, docs) => {
           if (err) {
             console.error(err);
-          } else {  
-            console.log(docs[docs.length - 1]._id)
-            gameId = docs[docs.length - 1]._id
+          } else {
+            gameId = docs[docs.length - 1]._id;
             done();
           }
         });
@@ -85,7 +83,7 @@ afterAll(() => {
 describe('GET /game', () => {
   it('succeeds with /game/_id', async () => {
     const response = await request(url)
-      .get(`/game/5e14771a587d383c33092e83`)
+      .get(`/game/${gameId}`)
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
     expect(typeof response.body).toBe('object');
@@ -170,14 +168,15 @@ describe('POST /game/deleteUnActiveGame', () => {
   let testGameId;
 
   it('succeeds when valid id and userId is sent', async () => {
-    testUser = makeid(5);
     const response = await request(url)
       .post('/seeks')
       .send({
-        userId: testUser
+        userId: testId,
+        color: 'w'
       })
       .then((response) => {
         testGameId = response.body._id
+        console.log(testGameId);
         return response
       })
       .then((res) => {
@@ -186,7 +185,7 @@ describe('POST /game/deleteUnActiveGame', () => {
           .post('/game/deleteUnActiveGame')
           .send({
             id: testGameId,
-            userId: testUser,
+            userId: testId,
           })
           .expect('Content-Type', /json/)
           .then((response) => {
