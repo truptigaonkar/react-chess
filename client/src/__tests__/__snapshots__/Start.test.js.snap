@@ -1,0 +1,313 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Start component Maches the snapshot 1`] = `
+<main
+  className="MuiGrid-root makeStyles-root-1 MuiGrid-container"
+>
+  <div
+    className="MuiGrid-root makeStyles-image-2 MuiGrid-item MuiGrid-grid-sm-4 MuiGrid-grid-md-7"
+  />
+  <div
+    className="MuiPaper-root MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-8 MuiGrid-grid-md-5 MuiPaper-elevation6"
+  >
+    <div
+      className="makeStyles-paper-3"
+    >
+      <svg
+        className="makeStyles-logo-5"
+      >
+        crown.svg
+      </svg>
+      <h1
+        className="MuiTypography-root MuiTypography-h5"
+      >
+        Chess
+      </h1>
+      <form
+        className="makeStyles-form-6"
+        onSubmit={[Function]}
+      >
+        <div
+          className="MuiFormControl-root MuiTextField-root MuiFormControl-marginNormal MuiFormControl-fullWidth"
+          data-testid="input"
+        >
+          <label
+            className="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            data-shrink={false}
+            htmlFor="userId"
+            id="userId-label"
+          >
+            Please enter your user ID
+            <span
+              className="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+            >
+               
+              *
+            </span>
+          </label>
+          <div
+            className="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+            onClick={[Function]}
+          >
+            <input
+              aria-describedby="userId-helper-text"
+              aria-invalid={false}
+              autoComplete="name"
+              autoFocus={true}
+              className="MuiInputBase-input MuiOutlinedInput-input"
+              disabled={false}
+              id="userId"
+              name="userId"
+              onAnimationStart={[Function]}
+              onBlur={[Function]}
+              onChange={[Function]}
+              onFocus={[Function]}
+              required={true}
+              type="text"
+            />
+            <fieldset
+              aria-hidden={true}
+              className="PrivateNotchedOutline-root-229 MuiOutlinedInput-notchedOutline"
+              style={
+                Object {
+                  "paddingLeft": 8,
+                }
+              }
+            >
+              <legend
+                className="PrivateNotchedOutline-legend-230"
+                style={
+                  Object {
+                    "width": 0.01,
+                  }
+                }
+              >
+                <span
+                  dangerouslySetInnerHTML={
+                    Object {
+                      "__html": "&#8203;",
+                    }
+                  }
+                />
+              </legend>
+            </fieldset>
+          </div>
+          <p
+            className="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+            id="userId-helper-text"
+          >
+            User ID must be at least 5 characters long
+          </p>
+        </div>
+        <p
+          style={
+            Object {
+              "color": "red",
+            }
+          }
+        >
+          
+        </p>
+        <button
+          className="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-submit-7 MuiButton-containedPrimary MuiButton-fullWidth"
+          data-testid="button"
+          disabled={false}
+          onBlur={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="submit"
+        >
+          <span
+            className="MuiButton-label"
+          >
+            Enter
+          </span>
+        </button>
+        <div
+          className="MuiBox-root MuiBox-root-272"
+        >
+          <p
+            className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiTypography-alignCenter"
+          >
+            Copyright © 
+            <a
+              className="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorInherit"
+              href="https://github.com/BASEL8/react-chess"
+              onBlur={[Function]}
+              onFocus={[Function]}
+            >
+              Chess Online
+            </a>
+            2020
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+`;
+
+exports[`Start component matches the snapshot 1`] = `
+<main
+  className="MuiGrid-root makeStyles-root-1 MuiGrid-container"
+>
+  <div
+    className="MuiGrid-root makeStyles-image-2 MuiGrid-item MuiGrid-grid-sm-4 MuiGrid-grid-md-7"
+  />
+  <div
+    className="MuiPaper-root MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-8 MuiGrid-grid-md-5 MuiPaper-elevation6"
+  >
+    <div
+      className="makeStyles-paper-3"
+    >
+      <svg
+        className="makeStyles-logo-5"
+      >
+        crown.svg
+      </svg>
+      <h1
+        className="MuiTypography-root MuiTypography-h5"
+      >
+        Chess
+      </h1>
+      <form
+        className="makeStyles-form-6"
+        onSubmit={[Function]}
+      >
+        <div
+          className="MuiFormControl-root MuiTextField-root MuiFormControl-marginNormal MuiFormControl-fullWidth"
+          data-testid="input"
+        >
+          <label
+            className="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            data-shrink={false}
+            htmlFor="userId"
+            id="userId-label"
+          >
+            Please enter your user ID
+            <span
+              className="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+            >
+               
+              *
+            </span>
+          </label>
+          <div
+            className="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+            onClick={[Function]}
+          >
+            <input
+              aria-describedby="userId-helper-text"
+              aria-invalid={false}
+              autoComplete="name"
+              autoFocus={true}
+              className="MuiInputBase-input MuiOutlinedInput-input"
+              disabled={false}
+              id="userId"
+              name="userId"
+              onAnimationStart={[Function]}
+              onBlur={[Function]}
+              onChange={[Function]}
+              onFocus={[Function]}
+              required={true}
+              type="text"
+            />
+            <fieldset
+              aria-hidden={true}
+              className="PrivateNotchedOutline-root-229 MuiOutlinedInput-notchedOutline"
+              style={
+                Object {
+                  "paddingLeft": 8,
+                }
+              }
+            >
+              <legend
+                className="PrivateNotchedOutline-legend-230"
+                style={
+                  Object {
+                    "width": 0.01,
+                  }
+                }
+              >
+                <span
+                  dangerouslySetInnerHTML={
+                    Object {
+                      "__html": "&#8203;",
+                    }
+                  }
+                />
+              </legend>
+            </fieldset>
+          </div>
+          <p
+            className="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+            id="userId-helper-text"
+          >
+            User ID must be at least 5 characters long
+          </p>
+        </div>
+        <p
+          style={
+            Object {
+              "color": "red",
+            }
+          }
+        >
+          
+        </p>
+        <button
+          className="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-submit-7 MuiButton-containedPrimary MuiButton-fullWidth"
+          data-testid="button"
+          disabled={false}
+          onBlur={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="submit"
+        >
+          <span
+            className="MuiButton-label"
+          >
+            Enter
+          </span>
+        </button>
+        <div
+          className="MuiBox-root MuiBox-root-272"
+        >
+          <p
+            className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiTypography-alignCenter"
+          >
+            Copyright © 
+            <a
+              className="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorInherit"
+              href="https://github.com/BASEL8/react-chess"
+              onBlur={[Function]}
+              onFocus={[Function]}
+            >
+              Chess Online
+            </a>
+            2020
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+`;
