@@ -9,8 +9,18 @@ const GameModel = require('../models/game');
 
 const uri = process.env.DATABASE;
 const url = 'http://localhost:8000/api';
-const testId = 'testUser';
+let testUser;
 let gameId;
+
+function makeid(length) {
+  var result = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 /**
  * Create test Fen object
@@ -29,10 +39,13 @@ const testFen = chess.fen();
  * Save the id and userId of the test game object in game database
  * */
 beforeAll((done) => {
+  testUser = makeid(5);
+  console.log(testUser);
+  
   return request(url)
     .post('/seeks')
     .send({
-      userId: testId
+      userId: testUser
     })
     .expect('Content-Type', /json/)
     .expect(200)
@@ -49,6 +62,7 @@ beforeAll((done) => {
           if (err) {
             console.error(err);
           } else {  
+            console.log(docs[docs.length - 1]._id)
             gameId = docs[docs.length - 1]._id
             done();
           }
@@ -62,7 +76,7 @@ afterAll(() => {
     .post('/game/deleteUnActiveGame')
     .send({
       id: gameId,
-      userId: testId,
+      userId: testUser,
     })
     .expect('Content-Type', /json/)
     .expect(200);
@@ -71,7 +85,7 @@ afterAll(() => {
 describe('GET /game', () => {
   it('succeeds with /game/_id', async () => {
     const response = await request(url)
-      .get(`/game/${gameId}`)
+      .get(`/game/5e14771a587d383c33092e83`)
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
     expect(typeof response.body).toBe('object');
@@ -123,12 +137,13 @@ describe('POST /game/move', () => {
 });
 
 describe('POST /game/play', () => {
+  testUser = makeid(5)
   it('succeeds when valid id and playerTwo are sent', async () => {
     const response = await request(url)
       .post('/game/play')
       .send({
         id: gameId,
-        playerTwo: testId,
+        playerTwo: testUser,
       })
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
@@ -141,7 +156,7 @@ describe('POST /game/play', () => {
       .post('/game/play')
       .send({
         gameHistory: [],
-        gameFen: 'a1',
+        gameFen: testFen,
         gameStyle: {},
       })
       .expect('Content-Type', /json/);
@@ -155,10 +170,11 @@ describe('POST /game/deleteUnActiveGame', () => {
   let testGameId;
 
   it('succeeds when valid id and userId is sent', async () => {
+    testUser = makeid(5);
     const response = await request(url)
       .post('/seeks')
       .send({
-        userId: testId
+        userId: testUser
       })
       .then((response) => {
         testGameId = response.body._id
@@ -170,7 +186,7 @@ describe('POST /game/deleteUnActiveGame', () => {
           .post('/game/deleteUnActiveGame')
           .send({
             id: testGameId,
-            userId: testId,
+            userId: testUser,
           })
           .expect('Content-Type', /json/)
           .then((response) => {

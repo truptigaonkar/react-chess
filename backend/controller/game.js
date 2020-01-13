@@ -20,13 +20,14 @@ exports.playGame = (req, res) => {
       return res.json({ err: 'no game with this id exists' });
     }
     if (game.w) {
-      game.b = playerTwo
+      game.b = playerTwo;
     } else {
-      game.w = playerTwo
+      game.w = playerTwo;
     }
     game.started = true;
     game.playerTwo = playerTwo;
     game.save();
+    return res.json(game);
   });
 };
 exports.gameMove = (req, res) => {
@@ -62,7 +63,7 @@ exports.deleteGame = (req, res) => {
     if (!game) {
       return res.json({ err: 'this game is not available on database' });
     }
-    if (game) { 
+    if (game) {
       if (userId === game.playerOne && !game.playerTwo) {
         game.remove();
         return res.json({ message: 'this game has been successfully deleted' });

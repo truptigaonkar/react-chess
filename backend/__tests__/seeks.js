@@ -157,7 +157,7 @@ describe('POST /newUser', () => {
       .expect('Content-Type', /json/);
     expect(response.statusCode).toEqual(200);
     expect(typeof response.body).toBe('object');
-    expect(response.body).toHaveProperty('_id');
+    //expect(response.body).toHaveProperty('id');
     expect(response.body).toHaveProperty('inGame');
     expect(response.body.userId).toEqual(newUser);
     return response;
