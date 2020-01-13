@@ -27,10 +27,10 @@ describe('App component', () => {
     expect(component.find('Route[path="/lobby"]').first().prop('component')).toBe(Lobby);
   });
 
-  it('routes /game to Game', () => {
+/*   it('routes /game to Game', () => {
     const component = shallow(<App />);
     expect(component.find('Route[path="/game"]').first().prop('component')).toBe(Game);
-  });
+  }); */
 
   /* it('renders Lobby component', () => {
     const wrapper = mount(
@@ -39,14 +39,5 @@ describe('App component', () => {
       </MemoryRouter>
     );
     expect(wrapper.find(Lobby)).toHaveLength(1);
-  });
-
-  it('renders Lobby component', () => {
-    const wrapper = mount(
-      <MemoryRouter initialEntries={[ '/game' ]}>
-        <App />
-      </MemoryRouter>
-    );
-    expect(wrapper.find(Game)).toHaveLength(1);
   }); */
 });

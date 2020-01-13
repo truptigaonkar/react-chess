@@ -104,7 +104,7 @@ const Login = () => {
               Chess
             </Typography>
 
-            <form className={classes.form} onSubmit={handleAddUser}>
+            <form className={classes.form} onSubmit={handleAddUser} data-testid="form">
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -117,7 +117,7 @@ const Login = () => {
                 autoComplete="name"
                 onChange={onChangeUsername}
                 autoFocus
-                data-testid="input"
+                inputProps={{ "data-testid": "userIdInput" }}
               />
               <p style={{ color: 'red' }}>{errorMessage}</p>
               <Button
@@ -129,7 +129,7 @@ const Login = () => {
                 data-testid="button"
               >
                 Enter
-            </Button>
+              </Button>
               <Box mt={5}>
                 <Copyright />
               </Box>
