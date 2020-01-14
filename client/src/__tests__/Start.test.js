@@ -13,6 +13,9 @@ const mockHandleClick = jest.fn();
 const onSearchMock = jest.fn();
 const onSubmit = jest.fn();
 
+configure({ adapter: new Adapter() });
+render(<App />);
+
 afterEach(cleanup);
 
 describe('Start component', () => {
@@ -48,30 +51,6 @@ describe('Start component', () => {
     expect(button).toBeInTheDocument();
     expect(button.textContent).toBe('Enter');
   });
-
-  it('captures clicks', () => {
-    /* configure({adapter: new Adapter()});
-    const wrapper = shallow(<App />);
-
-    const setup = () => {
-      const utils = render(<Login />);
-      const input = utils.getByTestId('userIdInput');
-      const button = utils.getByTestId('button');
-      return {
-        input,
-        ...utils
-      }
-    }
-
-    const { input, button } = setup(); */
-    const { getByTestId } = render(<Login onSubmit={onSubmit} />);
-    const input = getByTestId('userIdInput');
-    const form = getByTestId('form');
-  
-    fireEvent.change(input, { target: { value: 'testUser'} })
-    fireEvent.submit(form);
-    expect(onSubmit).toHaveBeenCalled();
-  })
 });
 
 describe('save to localStorage', () => {
