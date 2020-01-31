@@ -1,26 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import Helmet from 'react-helmet';
-import Chess from 'chess.js';
-import Chessboard from 'chessboardjsx';
-import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
-import { URL } from './config';
+import React, { useEffect, useState } from "react";
+import Helmet from "react-helmet";
+import Chess from "chess.js";
+import Chessboard from "chessboardjsx";
+import axios from "axios";
+import { Link, useParams } from "react-router-dom";
+import { URL } from "./config";
+import { Button, AppBar, Toolbar, Grid, Container, Avatar, ButtonGroup } from "@material-ui/core";
+import Alert from '@material-ui/lab/Alert';
+import LogoutModal from "./LogoutModal";
 
 function Game() {
   const { id } = useParams();
   const [chess, updateChess] = useState(new Chess());
-  const [fen, updateFen] = useState('start');
+  const [fen, updateFen] = useState("start");
   const [moveHistory, updateMoveHistory] = useState([]);
   const [gameStarted, updateGameStarted] = useState(false);
-  const [playerOne, updatePlayerOne] = useState('');
-  const [playerTwo, updatePlayerTwo] = useState('');
-  const [myColor, updateMyColor] = useState('');
+  const [playerOne, updatePlayerOne] = useState("");
+  const [playerTwo, updatePlayerTwo] = useState("");
+  const [myColor, updateMyColor] = useState("");
   const [squareStyles, updateSquareStyles] = useState({});
-  const [pieceSquare, updatePieceSquare] = useState('');
+  const [pieceSquare, updatePieceSquare] = useState("");
   const [check, updateCheck] = useState(false);
-  const [winner, updateWinner] = useState('');
+  const [winner, updateWinner] = useState("");
   const [draw, updateDraw] = useState(false);
-  const [drawReason, updateDrawReason] = useState('');
+  const [drawReason, updateDrawReason] = useState("");
+  const [openLogoutModal, setOpenLogoutModal] = useState(false);
+  const [userId, setUserId] = useState(localStorage.getItem("userId"));
 
   function checkForCheck() {
     if (chess.in_check()) {
@@ -35,131 +40,124 @@ function Game() {
       if (chess.in_checkmate()) {
         // The winner is the last player making a move
         const playerInTurn = chess.turn();
-        if (playerInTurn === 'w') {
-          updateWinner('black player');
+        if (playerInTurn === "w") {
+          updateWinner("black player");
         } else {
-          updateWinner('white player');
+          updateWinner("white player");
         }
       } else if (chess.in_draw()) {
         updateDraw(true);
         // Check for draw reasons
         if (chess.in_stalemate()) {
-          updateDrawReason('stalemate');
+          updateDrawReason("stalemate");
         } else if (chess.insufficient_material()) {
-          updateDrawReason('insufficient material');
+          updateDrawReason("insufficient material");
         }
       }
     }
   }
 
   useEffect(() => {
-
     // GET request
-    axios.get(`${URL}/api/game/${id}`)
-      .then(({ data, err }) => {
-        if (err) {
-          return console.log(err);
-        }
+    axios.get(`${URL}/api/game/${id}`).then(({ data, err }) => {
+      if (err) {
+        return console.log(err);
+      }
 
-        // Fetch user id from local storage
-        const myUserId = window.localStorage.getItem('userId');
+      // Fetch user id from local storage
+      const myUserId = window.localStorage.getItem("userId");
 
-        // Start game if not started
-        // Player two starts the game when entering game page
-        // *Checking if there is a playerOne that is not me*
-        if(!data.started && data.playerOne && myUserId !== data.playerOne) {
-          axios.post(`${URL}/api/game/play`, {
+      // Start game if not started
+      // Player two starts the game when entering game page
+      // *Checking if there is a playerOne that is not me*
+      if (!data.started && data.playerOne && myUserId !== data.playerOne) {
+        axios
+          .post(`${URL}/api/game/play`, {
             playerTwo: myUserId,
             id: id
           })
-          .then(function (response) {
+          .then(function(response) {
             return response;
           })
-          .catch(function (error) {
+          .catch(function(error) {
             console.log(error);
           });
-        }
+      }
 
-        // Set color
-        if(data.w) {
-          if(data.w === myUserId) updateMyColor('w');
-          else updateMyColor('b');
-        }
-        else if(data.b) {
-          if(data.b === myUserId) updateMyColor('b');
-          else updateMyColor('w');
-        }
+      // Set color
+      if (data.w) {
+        if (data.w === myUserId) updateMyColor("w");
+        else updateMyColor("b");
+      } else if (data.b) {
+        if (data.b === myUserId) updateMyColor("b");
+        else updateMyColor("w");
+      }
 
-        // Load move history
-        if (data.history.length > 0) {
-          const { history } = data;
-          const historyWithNumbers = [];
-          let moveString = '';
+      // Load move history
+      if (data.history.length > 0) {
+        const { history } = data;
+        const historyWithNumbers = [];
+        let moveString = "";
 
-          // Create new game
-          const game = new Chess();
+        // Create new game
+        const game = new Chess();
 
-          // Converting move history into a string to use in pgn
-          let nr = 1;
-          let newString = '';
-          for (let i = 0; i < history.length; i += 1) {
-            if (i % 2 === 0) {
-              newString = `${nr}.${history[i]}`;
-              historyWithNumbers.push(newString);
-              nr += 1;
-            } else {
-              historyWithNumbers.push(history[i]);
-            }
+        // Converting move history into a string to use in pgn
+        let nr = 1;
+        let newString = "";
+        for (let i = 0; i < history.length; i += 1) {
+          if (i % 2 === 0) {
+            newString = `${nr}.${history[i]}`;
+            historyWithNumbers.push(newString);
+            nr += 1;
+          } else {
+            historyWithNumbers.push(history[i]);
           }
-          moveString = historyWithNumbers.join(' ');
-
-          //Creating pgn
-          const pgn = [
-            moveString,
-          ];
-
-          // Load moves to game
-          // Then update chess, fen and moveHistory
-          game.load_pgn(pgn.join('\n'));
-          updateChess(game);
-          updateFen(game.fen());
-          updateMoveHistory(game.history());
         }
-      });
+        moveString = historyWithNumbers.join(" ");
+
+        //Creating pgn
+        const pgn = [moveString];
+
+        // Load moves to game
+        // Then update chess, fen and moveHistory
+        game.load_pgn(pgn.join("\n"));
+        updateChess(game);
+        updateFen(game.fen());
+        updateMoveHistory(game.history());
+      }
+    });
   }, [id]);
 
   // Check for fen updates every second
   // If game not started, check for game started
   useEffect(() => {
     const timer = setInterval(() => {
-      axios.get(`${URL}/api/game/${id}`)
-        .then((response) => {
+      axios.get(`${URL}/api/game/${id}`).then(response => {
+        // Check if game is started
+        if (!gameStarted && response.data.started) {
+          updateGameStarted(true);
+          updatePlayerOne(response.data.playerOne);
+          updatePlayerTwo(response.data.playerTwo);
+        }
 
-          // Check if game is started
-          if(!gameStarted && response.data.started) {
-            updateGameStarted(true);
-            updatePlayerOne(response.data.playerOne);
-            updatePlayerTwo(response.data.playerTwo);
+        // If fen has changed, update chess, fen and history
+        let newFen = response.data.fen;
+        if (newFen && newFen !== fen) {
+          // Adding moves to chess
+          let newHistory = response.data.history;
+          const newChess = new Chess();
+          for (let move of newHistory) {
+            newChess.move(move);
           }
 
-          // If fen has changed, update chess, fen and history
-          let newFen = response.data.fen;
-          if (newFen && newFen !== fen) {
-
-            // Adding moves to chess
-            let newHistory = response.data.history;
-            const newChess = new Chess();
-            for(let move of newHistory) {
-              newChess.move(move)
-            }
-
-            updateChess(newChess);
-            updateFen(newFen);
-            updateMoveHistory(newHistory);
-            checkForCheck();
-            checkForGameOver();
-          }
-        });
+          updateChess(newChess);
+          updateFen(newFen);
+          updateMoveHistory(newHistory);
+          checkForCheck();
+          checkForGameOver();
+        }
+      });
     }, 1000);
 
     return () => {
@@ -172,17 +170,17 @@ function Game() {
     const targetSquare = history.length && history[history.length - 1].to;
 
     return {
-      [pieceSqr]: { backgroundcolor: 'rgba(255, 255, 0, 0.4)' },
+      [pieceSqr]: { backgroundcolor: "rgba(255, 255, 0, 0.4)" },
       ...(history.length && {
         [sourceSquare]: {
-          backgroundcolor: 'rgba(255, 255, 0, 0.4)',
-        },
+          backgroundcolor: "rgba(255, 255, 0, 0.4)"
+        }
       }),
       ...(history.length && {
         [targetSquare]: {
-          backgroundcolor: 'rgba(255, 255, 0, 0.4)',
-        },
-      }),
+          backgroundcolor: "rgba(255, 255, 0, 0.4)"
+        }
+      })
     };
   };
 
@@ -193,17 +191,16 @@ function Game() {
         ...a,
         ...{
           [c]: {
-            background:
-                'radial-gradient(circle, #fffc00 36%, transparent 40%)',
-            borderRadius: '50%',
-          },
+            background: "radial-gradient(circle, #fffc00 36%, transparent 40%)",
+            borderRadius: "50%"
+          }
         },
         ...squareStyling({
           history: moveHistory,
-          pieceSquare,
-        }),
+          pieceSquare
+        })
       }),
-      {},
+      {}
     );
 
     updateSquareStyles({ ...highlightStyles });
@@ -217,10 +214,10 @@ function Game() {
   function allowDrag(data) {
     const { piece } = data;
     const piececolor = piece.charAt(0);
-    if (myColor === 'w' && piececolor === 'b') {
+    if (myColor === "w" && piececolor === "b") {
       return false;
     }
-    if (myColor === 'b' && piececolor === 'w') {
+    if (myColor === "b" && piececolor === "w") {
       return false;
     }
     // Stop all moves when the game is over
@@ -242,7 +239,7 @@ function Game() {
     // Get list of possible moves for this square
     const moves = chess.moves({
       square,
-      verbose: true,
+      verbose: true
     });
 
     // Exit if there are no moves available for this square
@@ -262,7 +259,9 @@ function Game() {
 
   function onSquareClick(square) {
     // Update states
-    updateSquareStyles(squareStyling({ pieceSquare: square, history: moveHistory }));
+    updateSquareStyles(
+      squareStyling({ pieceSquare: square, history: moveHistory })
+    );
     updatePieceSquare(square);
   }
 
@@ -270,9 +269,9 @@ function Game() {
     const sourceSq = sourceSquare.sourceSquare;
     const targetSq = sourceSquare.targetSquare;
     const { piece } = sourceSquare;
-    const pieceType = piece.split('')[1];
+    const pieceType = piece.split("")[1];
     const isCapture = chess.get(targetSq);
-    let sloppyMove = '';
+    let sloppyMove = "";
 
     if (isCapture) {
       sloppyMove = `${pieceType + sourceSq}x${targetSq}`;
@@ -293,16 +292,17 @@ function Game() {
       updateMoveHistory(newHistory);
 
       // Send move to backend
-      axios.post(`${URL}/api/game/move`, {
-        id,
-        gameFen: newFen, // State fen cannot be used since it may not be updated yet
-        gameHistory: newHistory,
-        gameStyle: 'standard',
-      })
-        .then((response) => {
+      axios
+        .post(`${URL}/api/game/move`, {
+          id,
+          gameFen: newFen, // State fen cannot be used since it may not be updated yet
+          gameHistory: newHistory,
+          gameStyle: "standard"
+        })
+        .then(response => {
           return response;
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
 
@@ -313,27 +313,53 @@ function Game() {
   }
 
   return (
-    <div className="App">
-      <Helmet><title>Game</title></Helmet>
-      <Link to="/lobby" className="btn btn-primary"><button type="submit">Back to Lobby</button></Link>
-      { gameStarted ? <h2>{playerOne}{' '}against{' '}{playerTwo}</h2> : null }
-      { gameStarted && chess.turn() === myColor ? <h2>It's your turn!</h2> : null }
-      { winner ? (
-        <h2>
-          {winner}
-          {' '}
-won!
-        </h2>
-      ) : null }
-      { draw ? <h2>Remi!</h2> : null }
-      { drawReason ? (
+    <>
+      <Helmet>
+        <title>Game</title>
+      </Helmet>
+      <AppBar position="static">
+        <Toolbar>
+          <Avatar src="/broken-image.jpg" />
+            <p style={{ color: 'red'}}>{localStorage.getItem("userId") && localStorage.getItem("userId")}</p>
+          <Button color="inherit" component={Link} to={"/lobby"}>
+            Lobby
+          </Button>
+          <Button
+            style={{ position: "absolute", right: 0 }}
+            color="inherit"
+            onClick={() => setOpenLogoutModal(true)}
+          >
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <br />
+<LogoutModal openLogoutModal={openLogoutModal} setUserId={setUserId} userId={userId} setOpenLogoutModal={setOpenLogoutModal} />
+      {gameStarted ? (
+        <h4>
+          <ButtonGroup color="secondary">
+  <Button>{playerOne}</Button>
+  <Button>v/s</Button>
+  <Button>{playerTwo}</Button>
+</ButtonGroup>
+        </h4>
+      ) : null}
+      {gameStarted && chess.turn() === myColor ? (
+        <Alert severity="info" style={{maxWidth:'200px', fontWeight:'bold', position:'relative', left:'50%', transform: 'translateX(-50%)' }}>It's your turn!!</Alert>
+      ) : null} <br />
+      {winner ? <Alert variant="outlined" severity="success" style={{maxWidth:'200px', fontWeight:'bold', position:'relative', left:'50%', transform: 'translateX(-50%)' }}>{winner} won!</Alert> : null}
+      {draw ? <h2>Remi!</h2> : null}
+      {drawReason ? (
         <h3>
-        Game was drawn due to
+          Game was drawn due to
           {drawReason}
         </h3>
-      ) : null }
-      { check && !winner && !draw ? <h2>Check!</h2> : null }
-      <div className="game-wrapper">
+      ) : null}
+       <Container>
+      <Grid container spacing={3}>
+      <Grid item xs={12} sm={6}>
+      
+      {check && !winner && !draw ? <h2>Check!</h2> : null}
         <Chessboard
           position={fen}
           squareStyles={squareStyles}
@@ -343,17 +369,24 @@ won!
           onDrop={onDrop}
           allowDrag={allowDrag}
         />
+       
+        </Grid>
+        <Grid item xs={12} sm={6}>
+        
         <HistoryTable moveHistory={moveHistory} />
-      </div>
-    </div>
+        
+        </Grid>
+        </Grid>
+        </Container>
+    </>
   );
 }
 
 function HistoryTable({ moveHistory: moves }) {
   const tableRows = [];
   let round = 1;
-  let whiteMove = '';
-  let blackMove = '';
+  let whiteMove = "";
+  let blackMove = "";
   for (let i = 0; i < moves.length; i += 2) {
     whiteMove = moves[i];
     blackMove = moves[i + 1];
@@ -362,22 +395,24 @@ function HistoryTable({ moveHistory: moves }) {
         <td>{round}</td>
         <td>{whiteMove}</td>
         <td>{blackMove}</td>
-      </tr>,
+      </tr>
     );
     round += 1;
   }
 
   return (
-    <table>
+    <>
+    <table border='1' style={{ backgroundColor:"#aaaaaa"}}>
       <thead>
         <tr>
-          <th>Moves</th>
+          <th>Rounds</th>
+          <th>White</th>
+          <th>Black</th>
         </tr>
       </thead>
-      <tbody>
-        {tableRows}
-      </tbody>
+      <tbody>{tableRows}</tbody>
     </table>
+    </>
   );
 }
 

@@ -16,7 +16,7 @@ const app = express();
 // db
 mongoose.connect(process.env.DATABASE, {
   useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false, useUnifiedTopology: true,
-}).then(() => console.log('db connected'));
+}).then(() => console.log('db connected')).catch(err => console.log(err));
 // middleware
 
 app.use(bodyParser.json({ limit: '10mb', extended: true }));
