@@ -23,7 +23,7 @@ exports.newUser = (req, res) => {
     }
     if (seeker) {
       return res.status(400).json({
-        err: 'there is a user with this id',
+        err: 'User already exist! Please create new User....',
       });
     }
     if (!seeker) {

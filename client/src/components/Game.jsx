@@ -5,7 +5,7 @@ import Chessboard from "chessboardjsx";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import { URL } from "./config";
-import { Button, AppBar, Toolbar, Grid, Container, Avatar, ButtonGroup } from "@material-ui/core";
+import { Button, AppBar, Toolbar, Grid, Container, Avatar, ButtonGroup, Table } from "@material-ui/core";
 import Alert from '@material-ui/lab/Alert';
 import LogoutModal from "./LogoutModal";
 
@@ -335,6 +335,8 @@ function Game() {
       </AppBar>
       <br />
 <LogoutModal openLogoutModal={openLogoutModal} setUserId={setUserId} userId={userId} setOpenLogoutModal={setOpenLogoutModal} />
+<Container>
+      
       {gameStarted ? (
         <h4>
           <ButtonGroup color="secondary">
@@ -347,19 +349,18 @@ function Game() {
       {gameStarted && chess.turn() === myColor ? (
         <Alert severity="info" style={{maxWidth:'200px', fontWeight:'bold', position:'relative', left:'50%', transform: 'translateX(-50%)' }}>It's your turn!!</Alert>
       ) : null} <br />
-      {winner ? <Alert variant="outlined" severity="success" style={{maxWidth:'200px', fontWeight:'bold', position:'relative', left:'50%', transform: 'translateX(-50%)' }}>{winner} won!</Alert> : null}
-      {draw ? <h2>Remi!</h2> : null}
+      {winner ? <Alert severity="success" style={{maxWidth:'200px', fontWeight:'bold', position:'relative', left:'50%', transform: 'translateX(-50%)' }}>{winner} won!</Alert> : null}
+      {draw ? <Alert severity="warning" style={{maxWidth:'200px', fontWeight:'bold', position:'relative', left:'50%', transform: 'translateX(-50%)' }}>DRAW! </Alert> : null}<br />
       {drawReason ? (
         <h3>
           Game was drawn due to
           {drawReason}
         </h3>
       ) : null}
-       <Container>
+       
+      {check && !winner && !draw ? <Alert severity="warning" style={{maxWidth:'200px', fontWeight:'bold', position:'relative', left:'50%', transform: 'translateX(-50%)' }}>CHECK!</Alert> : null}
       <Grid container spacing={3}>
-      <Grid item xs={12} sm={6}>
-      
-      {check && !winner && !draw ? <h2>Check!</h2> : null}
+      <Grid item xs={9}>
         <Chessboard
           position={fen}
           squareStyles={squareStyles}
@@ -369,9 +370,8 @@ function Game() {
           onDrop={onDrop}
           allowDrag={allowDrag}
         />
-       
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={3}>
         
         <HistoryTable moveHistory={moveHistory} />
         
@@ -402,16 +402,16 @@ function HistoryTable({ moveHistory: moves }) {
 
   return (
     <>
-    <table border='1' style={{ backgroundColor:"#aaaaaa"}}>
+    <Table border='1' style={{ backgroundColor:"lightblue", width:"230px"}} size="small" aria-label="a dense table">
       <thead>
         <tr>
-          <th>Rounds</th>
-          <th>White</th>
-          <th>Black</th>
+          <th>#</th>
+          <th>White Moves</th>
+          <th>Black Moves</th>
         </tr>
       </thead>
       <tbody>{tableRows}</tbody>
-    </table>
+    </Table>
     </>
   );
 }
