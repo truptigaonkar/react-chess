@@ -58,6 +58,34 @@ const Login = () => {
   const [username, setUsername] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [auth, setAuth] = useState(false);
+  const [seeks, setSeeks] = useState([]);
+
+    useEffect(() => {
+    axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
+      .then((response) => {
+        console.log(response.data);
+        setSeeks(response.data);
+      });
+  }, []);
+
+  const handleSignin = (e) => {
+    e.preventDefault();
+    axios.get(`http://localhost:8000/api/seeks/${localStorage.getItem('userId')}`)
+    .then((res) => {
+        localStorage.setItem('userId', username)
+        setAuth(true)
+    }).catch(error => {
+      console.log(error.response)
+      if (error.response) {
+        setErrorMessage(error.response.data.err)
+      }
+    })
+  }
+
+  const handleUsername = (e) => {
+    setUsername(e.target.value);
+  }
+
   useEffect(() => {
     let userId = localStorage.getItem('userId')
     if (userId) {
@@ -101,7 +129,7 @@ const Login = () => {
           <div className={classes.paper}>
             <Crown className={classes.logo} />
             <Typography component="h1" variant="h5">
-              Chess
+              Chess-Signup
           </Typography>
 
             <form className={classes.form} onSubmit={handleAddUser}>
@@ -127,15 +155,52 @@ const Login = () => {
                 className={classes.submit}
                 data-testid="button"
               >
-                Enter
+                SIGNUP
             </Button>
-              <Box mt={5}>
+            </form><br /><br /><br /><br />
+           
+            <Crown className={classes.logo} />
+            <Typography component="h1" variant="h5">
+              Chess-Signin
+          </Typography>
+            <form className={classes.form} onSubmit={handleSignin}>
+          <select 
+                value={username}
+                onChange={handleUsername}
+              >
+                <option value="select">Select player</option>
+                {
+                  seeks.map((seek) => (
+                  <>
+                    <option 
+                      key={seek.playerOne}
+                      value={seek.playerOne}
+                    >
+                      {seek.playerOne}
+                    </option>
+                  </>
+))
+              }
+              </select>
+
+          <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                data-testid="button"
+              >
+                SIGNIN
+            </Button>
+        </form>
+          </div>
+          <Box mt={5}>
                 <Copyright />
               </Box>
-            </form>
-          </div>
         </Grid>
       </Grid>
+
     </>
   );
 

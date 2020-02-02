@@ -1,68 +1,105 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Sprint 1 Planning
+Sprint 1: 16-20 December 2019
+Planning: 16 December 2019
+Participants: Elin Andersson Björnetorp, Trupti Gaonkar, Basel Munawwar, Ayumi Nakamura
 
-## Available Scripts
+### Workflow
+- We work with Scrum.
+Sprint 1: 16-20 December 2019
+Sprint 2: 23 December 2019 - 3 January 2020
+Sprint 3: 7-13 January 2020
 
-In the project directory, you can run:
+- We will have a Daily Scrum over Slack on the days we do not have classes.
 
-### `yarn start`
+- Basel reviews codes for Elin, Trupti and Ayumi. Basel’s codes are reviewed by Elin during sprint 1, by Trupti during sprint 2 and by Ayumi during sprint 3.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- We follow Gitflow.
+1. A develop branch is created from master.
+2. A release branch is created from develop.
+3. Feature branches are created from develop.
+4. When a feature is complete it is merged into the develop branch.
+5. When the release branch is done it is merged into develop and master.
+6. If an issue in master is detected a hotfix branch is created from master.
+7. Once the hotfix is complete it is merged to both develop and master.
+8. The beginning of titles of Github issues specify names of the branches.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+### Responsibilities
+- Elin works with documentation and backend testing
+- Trupti works with frontend (Lobby component).
+- Basel works with backend.
+- Ayumi works with frontend testing.
 
-### `yarn test`
+### Architecture
+We build our app with MERN-stack.
+> Frontend: React (functional components), Material UI
+> Backend: MongoDB, Node.js, Express
+> Testing: react-testing-library
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Sprint 1 Retrospective
+Sprint 1: 16-20 December 2019
+Retrospective: 20 December 2019
+Participants: Elin Andersson Björnetorp, Trupti Gaonkar, Basel Munawwar, Ayumi Nakamura
 
-### `yarn build`
+### What went well during Sprint 1
+- We worked well together.
+- We agreed on what framework and libraries to use and managed to - define the issues in a short period of time.
+- We managed to do what we planned to do.
+- Division of tasks worked well.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### What needs to be improved for Sprint 2
+- Complete the project description before we start working
+- Schedule time for retrospective and sprint planning when all the project members can participate.
+- Create separate issues for researching test libraries and writing actual codes for testing.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### Actions
+- Create Kanban board with Github Project to see clearly what needs to be done.
+---------------------------------------------------------------------------------------------------------------------
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Sprint 2 Planning
+Sprint 2: 23 December 2019 - 3 January 2020
+Planning: 20 December 2019
+Participants: Elin Andersson Björnetorp, Trupti Gaonkar, Basel Munawwar, Ayumi Nakamura
 
-### `yarn eject`
+### Responsibilities
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- Elin focuses on frontend Game component, and leaves testing.
+- Trupti continues to work on frontend Lobby component.
+- Basel continues backend.
+- Ayumi continues frontend testing and take over backend testing from Elin.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Design
+- We will use Chessboard.jsx for rendering chess components.
+https://chessboardjsx.com/
+- We use Jest and supertest for backend testing.
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Sprint 2 Retrospective
+Sprint 2: 23 December 2019 - 3 January 2020
+Retrospective: 3 January 2020
+Participants: Elin Andersson Björnetorp, Trupti Gaonkar, Ayumi Nakamura
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### What went well during Sprint 1
+- We all knew what we needed to do and did our own work.
+- We helped each other.
+- We learned to communicate using pull requests.
+- We got a chance to learn something new such as NoSQL database and test frameworks.
 
-## Learn More
+### Actions
+- Keep our good work!
+--------------------------------------------------------------------------------------------------------------------
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Sprint 3 Planning
+Sprint 3: 7 - 13 January 2020
+Planning: 3 January 2020
+Participants: Elin Andersson Björnetorp, Trupti Gaonkar, Ayumi Nakamura
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Responsibilities
+- Elin continues to work on Game component.
+- Trupti continues to work on Lobby component.
+- Basel continues to work on backend and code reviews.
+- Ayumi continues to work on testing.
 
-### Code Splitting
+### Design
+- We need to add frontend testing with for example Enzyme for edge cases that are not covered by snapshot testing with react-testing-library.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+### Next step
+- Next and last retrospective on 13 January.
