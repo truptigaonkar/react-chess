@@ -1,3 +1,7 @@
+# CHESS-React-Mongodb
+
+![Chess1](https://user-images.githubusercontent.com/14937374/79684302-6ef7dc00-8230-11ea-9146-d2e785d8b05c.gif)
+
 ## Sprint 1 Planning
 Sprint 1: 16-20 December 2019
 Planning: 16 December 2019
